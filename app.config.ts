@@ -1,7 +1,8 @@
 export default defineAppConfig({
   alpine: {
     title: 'Raylus',
-    description: 'James Ray\'s more... personal blog about hacking, building applications, 3D printing, and music playlists.',
+    description:
+      "James Ray's more... personal blog about hacking, building applications, 3D printing, and music playlists.",
     image: {
       src: '/alpine-0.webp',
       alt: 'An image showcasing my project.',
@@ -37,13 +38,14 @@ export default defineAppConfig({
       linkedin: {
         icon: 'uil:linkedin',
         label: 'LinkedIn',
-        href: 'https://www.linkedin.com/company/nuxtlabs',
+        href: 'https://www.linkedin.com/in/james-engineer/',
       },
 
       github: 'jamesray',
     },
     form: {
-      successMessage: 'Message has been sent to James, thanks for reaching out.',
+      successMessage:
+        'Message has been sent to James, thanks for reaching out.',
     },
   },
 
