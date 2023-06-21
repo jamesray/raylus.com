@@ -1,11 +1,10 @@
-
 name: studio-nuxt-build
 run-name: studio nuxt build
 
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ["main"]
+    branches: ['main']
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -16,7 +15,7 @@ permissions:
 
 # Allow one concurrent deployment
 concurrency:
-  group: "pages"
+  group: 'pages'
   cancel-in-progress: true
 
 jobs:
@@ -57,7 +56,7 @@ jobs:
           cache: ${{ steps.pkgman.outputs.cache }}
 
       - name: Install dependencies
-        run: ${{ steps.pkgman.outputs.package_manager }} install
+        run: ${{ steps.pkgman.outputs.package_manager }} install --no-frozen-lockfile
 
       - name: Install @nuxthq/studio
         run: ${{ steps.pkgman.outputs.package_manager }} add -D @nuxthq/studio
