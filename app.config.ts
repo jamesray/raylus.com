@@ -2,7 +2,7 @@ export default defineAppConfig({
   alpine: {
     title: 'Raylus',
     description:
-      'James Ray\'s more... personal blog about hacking, building applications, 3D printing, and music',
+      'Personal blog about hacking, building applications, 3D printing, and music',
     image: {
       src: '/alpine-0.webp',
       alt: 'An image showcasing my project.',
@@ -29,7 +29,6 @@ export default defineAppConfig({
       },
       navigation: true, // possible value are : true | false
       alignment: 'left', // possible value are : 'none' | 'left' | 'center' | 'right'
-      message: 'Follow me on', // string that will be displayed in the footer (leave empty or delete to disable)
     },
     socials: {
       twitter: 'realjamesray',
@@ -43,13 +42,5 @@ export default defineAppConfig({
 
       github: 'jamesray',
     },
-    form: {
-      successMessage:
-        'Message has been sent to James, thanks for reaching out.',
-    },
-  },
-
-  nuxtIcon: {
-    size: '1em',
   },
 });
