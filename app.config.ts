@@ -2,7 +2,7 @@ export default defineAppConfig({
   alpine: {
     title: 'Raylus',
     description:
-      "James Ray's more... personal blog about hacking, building applications, 3D printing, and music playlists.",
+      'James Ray\'s more... personal blog about hacking, building applications, 3D printing, and music',
     image: {
       src: '/alpine-0.webp',
       alt: 'An image showcasing my project.',
