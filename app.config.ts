@@ -2,6 +2,7 @@ export default defineAppConfig({
   alpine: {
     title: 'Raylus',
     description: 'Personal blog about hacking, building applications, 3D printing, and music',
+
     // image: {
     //   src: '/alpine-0.webp',
     //   alt: 'An image showcasing my project.',
@@ -16,6 +17,7 @@ export default defineAppConfig({
         alt: 'raylus', // alt of the logo
       },
     },
+
     footer: {
       credits: {
         enabled: true,
@@ -25,6 +27,7 @@ export default defineAppConfig({
       navigation: true, // possible value are : true | false
       alignment: 'left', // possible value are : 'none' | 'left' | 'center' | 'right'
     },
+
     socials: {
       twitter: 'realjamesray',
       instagram: 'raylus',
@@ -34,6 +37,10 @@ export default defineAppConfig({
         href: 'https://www.linkedin.com/in/james-engineer/',
       },
       github: 'jamesray',
+    },
+
+    image: {
+      src: '/james-ray.png',
     },
   },
 });
