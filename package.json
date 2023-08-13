@@ -3,10 +3,10 @@
   "version": "0.2.0",
   "private": true,
   "scripts": {
-    "dev": "nuxi dev",
-    "build": "nuxi build",
-    "generate": "nuxi generate",
-    "preview": "nuxi preview",
+    "dev": "npx nuxi dev",
+    "build": "npx nuxi build",
+    "generate": "npx nuxi generate",
+    "preview": "npx nuxi preview",
     "lint": "eslint ."
   },
   "devDependencies": {
