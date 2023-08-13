@@ -1,14 +1,13 @@
 export default defineAppConfig({
   alpine: {
     title: 'Raylus',
-    description:
-      'Personal blog about hacking, building applications, 3D printing, and music',
-    image: {
-      src: '/alpine-0.webp',
-      alt: 'An image showcasing my project.',
-      width: 400,
-      height: 300,
-    },
+    description: 'Personal blog about hacking, building applications, 3D printing, and music',
+    // image: {
+    //   src: '/alpine-0.webp',
+    //   alt: 'An image showcasing my project.',
+    //   width: 400,
+    //   height: 300,
+    // },
     header: {
       position: 'left', // possible value are : | 'left' | 'center' | 'right'
       logo: {
@@ -19,12 +18,8 @@ export default defineAppConfig({
     },
     footer: {
       credits: {
-        // possible value are : true | false
         enabled: true,
-
-        // our github repository
         repository: 'https://www.github.com/jamesray',
-
         text: 'Powered by ⛰ Nuxt Studio',
       },
       navigation: true, // possible value are : true | false
@@ -33,13 +28,11 @@ export default defineAppConfig({
     socials: {
       twitter: 'realjamesray',
       instagram: 'raylus',
-
       linkedin: {
         icon: 'uil:linkedin',
         label: 'LinkedIn',
         href: 'https://www.linkedin.com/in/james-engineer/',
       },
-
       github: 'jamesray',
     },
   },
