@@ -53,6 +53,11 @@ export default defineAppConfig({
     backToTop: {
       text: 'to top',
     },
+    integrations: {
+      formspree: { 
+        url: 'https://formspree.io/f/xjvqypge' 
+      }
+    },
   },
 
   prose: {
