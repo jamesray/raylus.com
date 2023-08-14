@@ -1,5 +1,12 @@
 import { defineTheme } from 'pinceau'
 
 export default defineTheme({
-  // Design Tokens that override Alpine defaults
+  alpine: {
+    body: {
+      backgroundColor: {
+        initial: '#FFFFF',
+        dark: '#0c0c0d'
+      }
+    }
+  }
 })
