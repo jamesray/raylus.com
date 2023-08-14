@@ -22,10 +22,16 @@ export default defineAppConfig({
       credits: {
         enabled: true,
         repository: 'https://www.github.com/jamesray',
-        text: 'Powered by ⛰ Nuxt Studio',
+        text: '©️ 2023 - James Ray',
       },
-      navigation: true, // possible value are : true | false
-      alignment: 'left', // possible value are : 'none' | 'left' | 'center' | 'right'
+
+      // possible value are : true | false
+      navigation: false,
+
+      // possible value are : 'none' | 'left' | 'center' | 'right'
+      alignment: 'left',
+
+      message: 'powered by https://nuxt.studio',
     },
 
     socials: {
@@ -40,7 +46,26 @@ export default defineAppConfig({
     },
 
     image: {
-      src: '/james-ray.png',
+      src: '/alpine-0.webp',
+      alt: '',
     },
+
+    backToTop: {
+      text: 'to top',
+    },
+  },
+
+  prose: {
+    headings: {
+      icon: 'icon-park-solid:copy-link',
+    },
+
+    h1: {
+      icon: 'material-symbols:format-h1',
+    },
+  },
+
+  nuxtIcon: {
+    size: '1.2em',
   },
 });
