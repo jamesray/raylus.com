@@ -31,7 +31,7 @@ export default defineAppConfig({
       // possible value are : 'none' | 'left' | 'center' | 'right'
       alignment: 'left',
 
-      message: 'powered by https://nuxt.studio',
+      message: 'powered by nuxt.studio',
     },
 
     socials: {
