@@ -1,10 +1,12 @@
+
 name: studio-nuxt-build
 run-name: studio nuxt build
 
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ['main']
+    branches:
+      - 'main'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -15,7 +17,7 @@ permissions:
 
 # Allow one concurrent deployment
 concurrency:
-  group: 'pages'
+  group: "pages"
   cancel-in-progress: true
 
 jobs:
@@ -48,7 +50,7 @@ jobs:
         name: Install pnpm
         id: pnpm-install
         with:
-          version: 8
+          version: 7
 
       - uses: actions/setup-node@v3
         with:
@@ -56,7 +58,7 @@ jobs:
           cache: ${{ steps.pkgman.outputs.cache }}
 
       - name: Install dependencies
-        run: ${{ steps.pkgman.outputs.package_manager }} install --no-frozen-lockfile
+        run: ${{ steps.pkgman.outputs.package_manager }} install
 
       - name: Install @nuxthq/studio
         run: ${{ steps.pkgman.outputs.package_manager }} add -D @nuxthq/studio
@@ -65,10 +67,10 @@ jobs:
         run: echo 'modules[]=@nuxthq/studio' > .nuxtrc
 
       - name: Generate
-        run: ${{ steps.pkgman.outputs.package_manager }} nuxi generate
+        run: npx nuxi generate
         env:
           NUXT_PUBLIC_STUDIO_API_URL: https://api.nuxt.studio
-          NUXT_PUBLIC_STUDIO_TOKENS: b0c5c2d78851699432dc39a973ba6e39e380d2419c695fb745182cae2eb0799a
+          NUXT_PUBLIC_STUDIO_TOKENS: d4c156de335c81a3c1b76a3329d61a522ebc969536eb910eac8f38496a4b2407
 
       - name: Add .nojekyll file
         run: touch .output/public/.nojekyll
