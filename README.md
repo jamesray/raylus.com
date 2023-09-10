@@ -1,4 +1,4 @@
-# Alpine Starter
+# Raylus.com
 
 Starter template for [Alpine](https://alpine.nuxt.space).
 
