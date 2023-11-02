@@ -35,7 +35,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Identify package manager
         id: pkgman
@@ -45,12 +45,12 @@ jobs:
           echo "cache=$cache" >> $GITHUB_OUTPUT
           echo "package_manager=$package_manager" >> $GITHUB_OUTPUT
 
-      - uses: pnpm/action-setup@v2.2.4
+      - uses: pnpm/action-setup@v2.4.0
         if: ${{ steps.pkgman.outputs.package_manager == 'pnpm' }}
         name: Install pnpm
         id: pnpm-install
         with:
-          version: 7
+          version: 8
 
       - uses: actions/setup-node@v3
         with:
@@ -64,13 +64,14 @@ jobs:
         run: ${{ steps.pkgman.outputs.package_manager }} add -D @nuxthq/studio
 
       - name: Create .nuxtrc
-        run: echo 'modules[]=@nuxthq/studio' > .nuxtrc
+        run: echo $'\nautoImport=true\nmodules[]=@nuxthq/studio' >> .nuxtrc
 
       - name: Generate
         run: npx nuxi generate
         env:
           NUXT_PUBLIC_STUDIO_API_URL: https://api.nuxt.studio
-          NUXT_PUBLIC_STUDIO_TOKENS: d4c156de335c81a3c1b76a3329d61a522ebc969536eb910eac8f38496a4b2407
+          NUXT_PUBLIC_STUDIO_TOKENS: b0c5c2d78851699432dc39a973ba6e39e380d2419c695fb745182cae2eb0799a
+
 
       - name: Add .nojekyll file
         run: touch .output/public/.nojekyll
