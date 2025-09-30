@@ -55,7 +55,7 @@
       --pad:20px; --mobile-pad:clamp(14px, 6vw, 28px);
       --accent: oklch(.92 .03 var(--hueA));
       --safe-top: env(safe-area-inset-top, 0px);
-      --iconSize: 38px; /* uniform circular icon buttons */
+      --iconSize: 38px;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -69,7 +69,6 @@
     .stage{ position:relative; width:100vw; height:100svh; isolation:isolate; padding:var(--pad); }
     .layer{position:absolute; inset:0; pointer-events:none}
 
-    /* subtle light-source bg */
     .lights::before{
       content:""; position:absolute; inset:-8%;
       background:
@@ -115,19 +114,18 @@
       .stage{ padding:var(--mobile-pad); }
       .center{
         justify-items:center; align-items:start;
-        padding-top: calc(var(--safe-top) + 64px); /* extra top space so glyph never hides under nav */
+        padding-top: calc(var(--safe-top) + 64px);
       }
     }
 
     .wrap{ position:absolute; left:0; top:0; will-change:transform }
     .box{ display:inline-block; pointer-events:auto }
 
-    /* ASCII glyph */
     pre.ascii{
       margin:0; white-space:pre; line-height:1.0;
       font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
       font-size: clamp(9px, 3.0vw, 21px);
-      letter-spacing:.02em; text-rendering:optimizeSpeed; cursor:default; /* no click -> resume now handled by icon */
+      letter-spacing:.02em; text-rendering:optimizeSpeed; cursor:default;
       filter: drop-shadow(0 0 .22rem rgba(0,0,0,.5)) drop-shadow(0 0 .1rem rgba(140,180,255,.1));
       color: var(--accent);
       transition: filter .15s ease, opacity .15s ease, transform .2s ease;
@@ -170,7 +168,8 @@
       position:absolute; top:calc(10px + var(--safe-top)); right:12px; display:flex; gap:.6rem; z-index:10;
       filter: grayscale(0.8) contrast(1.05) brightness(.95);
     }
-    .nav a{
+    .nav a,
+    .nav button{
       width:var(--iconSize); height:var(--iconSize);
       font:16px/1 ui-monospace,monospace; color:#cfd7de; text-decoration:none;
       border-radius:9999px; background:rgba(0,0,0,.12);
@@ -178,40 +177,37 @@
       transition: filter .2s ease, transform .2s ease, background .2s ease, color .2s ease;
       border:1px solid rgba(255,255,255,.06);
       box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+      cursor:pointer;
     }
-    .nav a span{ transform:translateY(1px) } /* better optical centering for glyphs */
-    .nav a:hover{
+    .nav button{ border:1px solid rgba(255,255,255,.06); }
+    .nav a span, .nav button span{ transform:translateY(1px) }
+    .nav a:hover, .nav button:hover{
       filter:none; transform:translateY(-1px);
       background:rgba(160,190,255,.08); color:#eaf0f4;
       box-shadow: 0 0 0.4rem rgba(140,180,255,.18);
     }
-    /* make ✉︎ visually equal height by slightly bumping font-size */
     .nav a[title="Email James"] span{ font-size:18px; }
-
     @media (max-width: 768px), (hover:none), (pointer:coarse){
-      .nav a{ width:36px; height:36px; }
+      .nav a, .nav button{ width:36px; height:36px; }
     }
 
     /* resume view (hidden by default) */
     .resume{
       position:absolute; inset:0; display:none; overflow:auto; padding:clamp(16px,4vw,40px);
       color:#e7ecef; backdrop-filter:saturate(1.1) blur(0px);
-      display:none; /* important: not visible by default */
+      display:none;
       grid-template-columns: minmax(0,1fr) minmax(280px,1000px) minmax(0,1fr);
       column-gap: clamp(16px, 3vw, 28px);
       align-items:start;
     }
     .resume.on{ display:grid; }
 
-    /* small, sleek floating back just to the left of the card */
-    .back-floating{
-      display:none;
-    }
+    .back-floating{ display:none; }
     @media (min-width: 1024px){
       .back-floating{
         grid-column: 1 / 2; align-self:start; justify-self:end;
         position:sticky; top:clamp(16px,4vw,40px);
-        width:max-content; /* no full-width stretch */
+        width:max-content;
         text-decoration:none; color:#cfe3ff; font:12px ui-monospace,monospace;
         background:rgba(120,160,255,.1); border:1px solid rgba(140,180,255,.25);
         padding:.34rem .58rem; border-radius:9999px;
@@ -233,7 +229,7 @@
     .resume ul{ margin:.2rem 0 0 1.1rem; padding:0 }
     .resume li{ margin:.2rem 0; }
     .resume .pill{
-      display:inline-block; margin:.18rem .25rem 0 0; padding:.28rem .62rem; /* more padding */
+      display:inline-block; margin:.18rem .25rem 0 0; padding:.28rem .62rem;
       border-radius:9999px;
       background:rgba(200,220,255,.08); border:1px solid rgba(200,220,255,.16); color:#dfe8ff; font-size:12px;
       box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
@@ -268,6 +264,10 @@
       <a href="#/resume" title="Resume">
         <span>📄</span>
       </a>
+      <!-- NEW: mute toggle -->
+      <button id="mute-toggle" type="button" title="Audio: unmute" aria-pressed="true" aria-label="Audio muted">
+        <span>🔇</span>
+      </button>
     </nav>
 
     <!-- main landing -->
@@ -442,7 +442,6 @@
     const wrap=document.getElementById('wrap'), wrapBox=document.getElementById('wrapBox');
     centerBox.appendChild(pre);
 
-    // disturb only; no click-to-resume (resume opens via top-right 📄)
     pre.addEventListener("pointerdown", e=>pointerDisturb(pre,e.clientX,e.clientY));
     pre.addEventListener("pointermove", e=>{ if(e.buttons) pointerDisturb(pre,e.clientX,e.clientY); });
     let isHovering=false, hoverEase=0;
@@ -608,10 +607,7 @@
       }
     }
     addEventListener('hashchange', applyRoute);
-    applyRoute(); // default is landing (resume hidden)
-
-    // click outside card returns
-    resumeEl.addEventListener('click', (e)=>{ if(e.target === resumeEl) location.hash="#/"; });
+    applyRoute();
 
     // first paint (reduces CLS)
     (function firstPaint(){
@@ -619,23 +615,57 @@
       pre.textContent = rows.join("\n");
     })();
   </script>
+
+  <!-- background audio -->
   <audio id="bg-audio" autoplay loop preload="auto">
     <source src="audio/bg-music.opus" type="audio/ogg; codecs=opus">
-    <!-- fallback -->
     Your browser does not support the audio element.
   </audio>
   <script>
     const audio = document.getElementById("bg-audio");
-    // start muted, let user unmute with a keypress or click (autoplay policies!)
-    audio.muted = true;
+    const muteBtn = document.getElementById("mute-toggle");
 
-    document.addEventListener("click", () => {
+    // Persisted preference (default: muted)
+    const saved = localStorage.getItem("audioMuted");
+    audio.muted = saved === null ? true : (saved === "true");
+
+    function updateMuteUI() {
+      if (!muteBtn) return;
+      const span = muteBtn.querySelector("span");
       if (audio.muted) {
+        span.textContent = "🔇";
+        muteBtn.title = "Audio: unmute";
+        muteBtn.setAttribute("aria-pressed","true");
+        muteBtn.setAttribute("aria-label","Audio muted");
+      } else {
+        span.textContent = "🔊";
+        muteBtn.title = "Audio: mute";
+        muteBtn.setAttribute("aria-pressed","false");
+        muteBtn.setAttribute("aria-label","Audio playing");
+      }
+    }
+    updateMuteUI();
+
+    // Autoplay policy helper: on first interaction, if user hasn't chosen to keep it muted, unmute+play.
+    const firstUnlock = (e) => {
+      if (localStorage.getItem("audioMuted") !== "true" && audio.muted) {
         audio.muted = false;
         audio.play().catch(()=>{});
+        updateMuteUI();
       }
-    }, { once: true });
+    };
+    document.addEventListener("click", firstUnlock, { once: true });
+
+    // Toggle via icon
+    muteBtn.addEventListener("click", (e)=>{
+      e.stopPropagation(); // don’t trigger the firstUnlock handler
+      audio.muted = !audio.muted;
+      localStorage.setItem("audioMuted", String(audio.muted));
+      if (!audio.muted) audio.play().catch(()=>{});
+      updateMuteUI();
+    });
   </script>
 </body>
 </html>
 <!-- alpha 0.1.2 -->
+ 
