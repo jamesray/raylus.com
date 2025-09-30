@@ -3,100 +3,107 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <meta name="color-scheme" content="dark light"/>
+  <meta name="color-scheme" content="dark"/>
   <title>RAYLUS</title>
   <meta name="description" content="ascii glyphs."/>
   <meta name="robots" content="index,follow"/>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32'/%3E%3C/svg%3E">
   <style>
     :root{
-      /* Dark (default) */
-      --bg:#06080a; --fg:#e7ecef; --dim:#87a0aa; --ring:#0f1318;
-      --hueA:230; --hueB:280; --grid-alpha:.045;
+      --bg:#05070a; --fg:#e7ecef; --dim:#8aa1ab;
+      --hueA:230; --hueB:280;
+      --grid-alpha:.045;
+      --grid-size:22px; /* tweak density */
     }
-    /* Inverted/light brutalist variant (toggled with 'i') */
-    :root.inv{
-      --bg:#e7ecef; --fg:#0a0d10; --dim:#3c4750; --ring:#cfd7de;
-      --grid-alpha:.06;
-    }
-
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0; color:var(--fg);
       font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif;
       user-select:none; overflow:hidden; display:grid; place-items:center;
+      background: var(--bg);
+    }
 
-      /* FUTURISTIC / GLITCH BACKDROP (animated light source + grid + columns) */
+    /* Fullscreen, mobile-safe stage */
+    .stage{
+      position:relative;
+      width:100vw;
+      height:100dvh; /* mobile friendly */
+      isolation:isolate;
+      padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+               max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    }
+
+    /* --- Background layers (no spines) --- */
+    .layer{
+      position:absolute; inset:0; pointer-events:none;
+    }
+    /* Light sources + vignette (radial only => no conic seams) */
+    .lights::before{
+      content:""; position:absolute; inset:-10%;
       background:
-        /* animated sweep light source (rotating) */
-        conic-gradient(from 0deg at 12% 8%, rgba(180,210,255,.10), rgba(0,0,0,0) 35%),
-        /* strong local light source bloom */
-        radial-gradient(1000px 700px at 12% 8%,
+        radial-gradient(1000px 700px at 12% 10%,
           color-mix(in oklab, oklch(.98 .06 255) 16%, transparent) 0%,
-          color-mix(in oklab, oklch(.95 .05 240) 12%, transparent) 40%,
-          transparent 70%),
-        /* secondary counter light bottom-right */
-        radial-gradient(900px 600px at 92% 92%,
+          color-mix(in oklab, oklch(.95 .05 240) 10%, transparent) 40%,
+          transparent 72%),
+        radial-gradient(900px 600px at 88% 86%,
           color-mix(in oklab, oklch(.96 .05 210) 8%, transparent) 0%,
           transparent 60%),
-        /* vertical glitch columns */
-        repeating-linear-gradient(90deg,
-          rgba(255,255,255,.03) 0 1px, transparent 1px 18px,
-          rgba(255,255,255,.02) 18px 19px, transparent 19px 34px),
-        /* terminal grid (y then x) */
-        linear-gradient(rgba(0,0,0,calc(var(--grid-alpha) * 0)) 0, rgba(0,0,0,0) 0), /* placeholder for dark/light parity */
-        linear-gradient(90deg, rgba(0,0,0,calc(var(--grid-alpha) * 0)) 0, rgba(0,0,0,0) 0), /* placeholder */
-        linear-gradient(rgba(255,255,255,var(--grid-alpha)) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,var(--grid-alpha)) 1px, transparent 1px),
-        /* vignette */
-        radial-gradient(1400px 900px at 50% 50%, transparent 45%, rgba(0,0,0,.28) 100%),
-        var(--bg);
-      background-size:
-        100% 100%, auto, auto,
-        100% 100%,
-        24px 24px, 24px 24px,
-        24px 24px, 24px 24px,
-        auto, auto;
-      background-blend-mode:
-        screen, plus-lighter, screen,
-        soft-light,
-        normal, normal,
-        overlay, overlay,
-        normal, normal;
-      animation: sweep 12s linear infinite;
+        radial-gradient(1400px 900px at 50% 50%,
+          transparent 45%, rgba(0,0,0,.28) 100%);
+      filter: blur(.2px);
+      mix-blend-mode: normal;
     }
-    @keyframes sweep{ to { background-position:
-      0 0, 0 0, 0 0,
-      8px 0,       /* columns drift */
-      0 0, 0 0,    /* placeholders */
-      0 -12px, -12px 0,  /* grids */
-      0 0, 0 0; } }
-    @media (prefers-reduced-motion: reduce){ body{animation:none} }
-
-    .stage{position:relative;width:100%;height:100%;isolation:isolate}
-    .stage::before{
+    /* Terminal grid (crisp, overlay) */
+    .grid::before{
+      content:""; position:absolute; inset:0;
+      background-image:
+        linear-gradient(rgba(255,255,255,var(--grid-alpha)) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,var(--grid-alpha)) 1px, transparent 1px);
+      background-size: var(--grid-size) var(--grid-size), var(--grid-size) var(--grid-size);
+      background-position: 0 0, 0 0;
+      mix-blend-mode: overlay;
+      opacity:.9;
+    }
+    /* Scanlines + subtle glare */
+    .scan::before{
       content:""; position:absolute; inset:0;
       background-image:
         repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 1px 3px),
         radial-gradient(300px 120px at 50% -30px, rgba(255,255,255,.05), transparent);
-      mix-blend-mode: overlay; opacity:.22; pointer-events:none;
+      mix-blend-mode: overlay; opacity:.22;
     }
+    /* Very faint “sweep” as a rotating linear gradient element (no conic spine) */
+    .sweep{
+      --sweep-alpha:.07;
+      position:absolute; inset:-20%;
+      background: linear-gradient(45deg,
+        rgba(180,210,255,var(--sweep-alpha)) 0%,
+        rgba(0,0,0,0) 45% 55%,
+        rgba(180,210,255,var(--sweep-alpha)) 100%);
+      mix-blend-mode: plus-lighter; opacity:.45;
+      transform-origin: 12% 10%;
+      animation: sweep 22s linear infinite;
+      pointer-events:none;
+    }
+    @keyframes sweep { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce){ .sweep{ animation:none } }
 
-    /* centered (default) */
-    .center{display:grid;place-items:center;width:100%;height:100%;pointer-events:none}
-
-    /* screensaver bouncer */
-    .wrap{position:absolute;left:0;top:0;will-change:transform}
-    .box{display:inline-block;pointer-events:auto}
+    /* Centered (default) */
+    .center{
+      position:absolute; inset:0; display:grid; place-items:center;
+      pointer-events:none;
+    }
+    .wrap{ position:absolute; left:0; top:0; will-change:transform; }
+    .box { display:inline-block; pointer-events:auto; }
 
     pre.ascii{
       margin:0; white-space:pre; line-height:1.0;
       font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
-      font-size: clamp(12px, 4.5vw, 26px);
+      font-size: clamp(12px, 4.8vw, 26px);
       letter-spacing:.02em; text-rendering:optimizeSpeed;
       filter: drop-shadow(0 0 .35rem rgba(0,0,0,.65))
-              drop-shadow(0 0 .2rem rgba(140,180,255,.15));
+              drop-shadow(0 0 .2rem rgba(140,180,255,.12));
       color: oklch(.92 .03 var(--hueA));
     }
 
@@ -119,14 +126,20 @@
   </style>
 </head>
 <body>
-  <div class="stage">
+  <div class="stage" id="stage">
+    <!-- background layers -->
+    <div class="layer lights"></div>
+    <div class="layer grid"></div>
+    <div class="layer scan"></div>
+    <div class="sweep" aria-hidden="true"></div>
+
     <!-- one <pre>; we move it between these -->
     <div class="center" id="center"><div class="box" id="centerBox"></div></div>
     <div class="wrap" id="wrap" hidden><div class="box" id="wrapBox"></div></div>
 
     <div class="noise" aria-hidden="true"></div>
     <div class="hud">
-      keys: <kbd>r</kbd> palette • <kbd>i</kbd> invert • <kbd>.</kbd> blink • <kbd>f</kbd> fullscreen •
+      keys: <kbd>r</kbd> palette • <kbd>.</kbd> blink • <kbd>f</kbd> fullscreen •
       <kbd>s</kbd> screensaver • <kbd>space</kbd> pause
     </div>
   </div>
@@ -216,6 +229,7 @@
     // ---------- screensaver physics ----------
     let saver=false, paused=false;
     let pos={x:0,y:0}, vel={x:140,y:110}, maxX=0,maxY=0;
+
     function measureBounds(){
       const sw=document.documentElement.clientWidth, sh=document.documentElement.clientHeight;
       const bw=wrapBox.offsetWidth, bh=wrapBox.offsetHeight;
@@ -276,9 +290,12 @@
         return;
       }
       if(e.key==="r"){ paletteIndex=(paletteIndex+1)%PALETTES.length; return; }
-      if(e.key==="i"){ document.documentElement.classList.toggle('inv'); return; } /* <-- fixed invert */
       if(e.key==="."){ pre.classList.toggle('blink'); return; }
-      if(e.key==="f"){ document.fullscreenElement?document.exitFullscreen():document.body.requestFullscreen().catch(()=>{}); return; }
+      if(e.key==="f"){
+        document.fullscreenElement?document.exitFullscreen()
+          : document.documentElement.requestFullscreen?.().catch(()=>{});
+        return;
+      }
     });
 
     addEventListener("resize", ()=>{ if(saver) measureBounds(); });
