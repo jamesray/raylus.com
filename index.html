@@ -14,7 +14,7 @@
       --dim: #9aa0a6;
       --accent: #9bbcff;
       --ring: #1b1f24;
-      --hueA: 230;  /* drifted in JS */
+      --hueA: 230;  /* JS drifts these */
       --hueB: 280;
     }
     @media (prefers-color-scheme: light) {
@@ -38,14 +38,13 @@
       position: relative;
       width: 100%;
       height: 100%;
-      display: grid; place-items: center;
-      padding: clamp(12px, 4vw, 48px);
       isolation: isolate;
     }
+    /* this box is absolutely positioned and "bounces" via transform */
     .wrap {
-      position: relative;
+      position: absolute;
+      left: 0; top: 0;
       will-change: transform;
-      /* screensaver mode moves this via transform */
     }
     pre#art {
       margin: 0;
@@ -58,6 +57,7 @@
       text-rendering: optimizeSpeed;
       color: oklch(0.92 0.03 var(--hueA));
     }
+    /* scanlines + bloom */
     .stage::before {
       content: "";
       position: absolute; inset: 0;
@@ -68,6 +68,7 @@
       pointer-events: none;
       opacity: .22;
     }
+    /* animated grain */
     .noise {
       position: absolute; inset: -25vmax;
       background:
@@ -76,11 +77,14 @@
       mix-blend-mode: soft-light; opacity: .55; pointer-events: none;
     }
     @keyframes n { to { transform: translate3d(1.5%, -1%, 0); } }
+
     .hud {
       position: absolute; bottom: 16px; inset-inline: 0;
       text-align: center; font-size: 12px; color: oklch(0.75 0.04 var(--hueB));
       opacity: .8;
+      pointer-events: none;
     }
+
     .blink { animation: b 2.4s ease-in-out infinite; }
     @keyframes b { 0%,96%,100%{opacity:1} 97%{opacity:.55} 98%{opacity:.18} 99%{opacity:.92} }
   </style>
@@ -92,19 +96,16 @@
     </div>
     <div class="noise" aria-hidden="true"></div>
     <div class="hud">
-      type to change • <kbd>Backspace</kbd> delete •
-      <kbd>r</kbd> palette • <kbd>i</kbd> invert • <kbd>.</kbd> blink •
-      <kbd>s</kbd> screensaver • <kbd>f</kbd> fullscreen • <kbd>esc</kbd> reset
+      <span style="pointer-events:auto">keys:</span>
+      <kbd>r</kbd> palette • <kbd>i</kbd> invert • <kbd>.</kbd> blink • <kbd>f</kbd> fullscreen
     </div>
   </div>
 
   <script>
-    // ---------------- utilities (tiny, original) ----------------
-    const clamp = (v,a,b)=>Math.min(b,Math.max(a,v));
-    const lerp  = (a,b,t)=>a+(b-a)*t;
-    const pick  = arr => arr[(Math.random()*arr.length)|0];
+    // ------- helpers -------
+    const pick = arr => arr[(Math.random()*arr.length)|0];
 
-    // ---------------- glyphs (5x7, uppercase) -------------------
+    // ------- glyphs (5x7 uppercase) -------
     const GLYPHS = {
       R:["████ ","█   █","█   █","████ ","█ █  ","█  █ ","█   █"],
       A:[" ███ ","█   █","█   █","█████","█   █","█   █","█   █"],
@@ -114,33 +115,25 @@
       S:[" ███ ","█   █","█    "," ███ ","    █","█   █"," ███ "],
       " ":[ "     ","     ","     ","     ","     ","     ","     "]
     };
+    const WORD = "RAYLUS";
     const ROWS = 7;
 
-    // palettes are glyph-char skins; last two have visible "off" states
+    // palettes define on/off chars (last two have visible off)
     const PALETTES = [
       { on:"█", off:" " }, { on:"▓", off:" " }, { on:"▒", off:" " },
       { on:"⣿",off:" " }, { on:"#", off:"." }, { on:"■", off:"·" }, { on:"@", off:"." }
     ];
     let paletteIndex = 0;
 
-    // ---------------- state ----------------
-    let text = "RAYLUS";
-    let blink = false;
-    let invert = false;
-    let hueA = 230, hueB = 280;
+    // disturbance map: "x,y" -> ttl
+    const disturb = new Map();
 
-    // disturbance: map index->ttl frames of forced glitch
-    const disturb = new Map(); // key = "x,y" string -> ttl
+    // elements
+    const stage = document.querySelector(".stage");
+    const wrap  = document.querySelector(".wrap");
+    const art   = document.getElementById("art");
 
-    // screensaver state for bouncing wrapper
-    const wrap = document.querySelector(".wrap");
-    let saver = false;
-    let pos = { x:0, y:0 }, vel = { x: 120, y: 90 }; // px/sec, updated each frame
-
-    // element refs
-    const art = document.getElementById("art");
-
-    // ---------------- render pipeline ----------------
+    // ------- render pipeline -------
     function renderWord(word, on=PALETTES[paletteIndex].on, off=PALETTES[paletteIndex].off){
       const rows = Array.from({length:ROWS},()=> "");
       for(const ch of word){
@@ -158,7 +151,6 @@
     }
 
     function applyDisturb(lines){
-      // lines: array of char arrays
       for(const [key,ttl] of disturb){
         if(ttl<=0){ disturb.delete(key); continue; }
         const [gx,gy] = key.split(",").map(Number);
@@ -173,62 +165,70 @@
     }
 
     function paint(){
-      // base draw
-      let txt = renderWord(text);
-      // micro glitches
+      let txt = renderWord(WORD);
       const lines = txt.split("\n").map((line,i)=> mutateLine(line, i%2?0.012:0.006).split(""));
-      // pointer disturbance overlay
       applyDisturb(lines);
       art.textContent = lines.map(a=>a.join("")).join("\n");
     }
 
-    // ---------------- color drift + tick ----------------
-    let last = performance.now();
-    function tick(now){
-      const dt = (now - last)/1000; last = now;
-
-      // drift hues
+    // ------- color drift -------
+    let hueA = 230, hueB = 280;
+    function driftColors(dt){
       hueA = (hueA +  8*dt) % 360;
       hueB = (hueB + 13*dt) % 360;
       const root = document.documentElement;
       root.style.setProperty("--hueA", hueA.toFixed(2));
       root.style.setProperty("--hueB", hueB.toFixed(2));
-
-      // screensaver bounce
-      if (saver){
-        const stage = document.querySelector(".stage").getBoundingClientRect();
-        const box   = wrap.getBoundingClientRect();
-        pos.x += vel.x*dt; pos.y += vel.y*dt;
-        // bounce on edges with small padding
-        const pad = 12;
-        if (pos.x < -box.width/2 + pad){ pos.x = -box.width/2 + pad; vel.x *= -1; }
-        if (pos.y < -box.height/2 + pad){ pos.y = -box.height/2 + pad; vel.y *= -1; }
-        if (pos.x > stage.width - box.width/2 - pad){ pos.x = stage.width - box.width/2 - pad; vel.x *= -1; }
-        if (pos.y > stage.height - box.height/2 - pad){ pos.y = stage.height - box.height/2 - pad; vel.y *= -1; }
-        // center the transform relative to stage
-        wrap.style.transform = `translate(${pos.x|0}px, ${pos.y|0}px)`;
-      }
-
-      paint();
-      requestAnimationFrame(tick);
     }
 
-    // ---------------- pointer ripple ----------------
+    // ------- perfect bounce (elastic reflection) -------
+    // We move the .wrap box with subpixel accuracy and reflect elastically:
+    // if pos goes beyond bounds, reflect position across boundary: pos = 2*max - pos
+    let pos = { x: 0, y: 0 };           // top-left (px)
+    let vel = { x: 140, y: 110 };       // px/sec (diagonal-ish)
+    let maxX = 0, maxY = 0;             // bounds (updated on resize)
+
+    function measureBounds(){
+      // use real sizes to stay aligned with vw/vh exactly
+      const sw = stage.clientWidth;
+      const sh = stage.clientHeight;
+      const bw = wrap.offsetWidth;
+      const bh = wrap.offsetHeight;
+      maxX = Math.max(0, sw - bw);
+      maxY = Math.max(0, sh - bh);
+      // clamp current pos inside bounds
+      pos.x = Math.min(Math.max(pos.x, 0), maxX);
+      pos.y = Math.min(Math.max(pos.y, 0), maxY);
+    }
+
+    function stepBounce(dt){
+      // advance
+      pos.x += vel.x * dt;
+      pos.y += vel.y * dt;
+
+      // reflect exactly (no energy loss, no jitter)
+      if (pos.x < 0)         { pos.x = -pos.x;           vel.x = -vel.x; }
+      if (pos.x > maxX)      { pos.x = 2*maxX - pos.x;   vel.x = -vel.x; }
+      if (pos.y < 0)         { pos.y = -pos.y;           vel.y = -vel.y; }
+      if (pos.y > maxY)      { pos.y = 2*maxY - pos.y;   vel.y = -vel.y; }
+
+      wrap.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+    }
+
+    // ------- pointer ripple -------
     function disturbAt(clientX, clientY){
-      // map client coords to cell indices inside <pre>
       const r = art.getBoundingClientRect();
       const px = clientX - r.left, py = clientY - r.top;
-      // approximate char metrics from computed font size
       const fs = parseFloat(getComputedStyle(art).fontSize) || 16;
-      const cw = fs * 0.62; // monospace-ish factor
-      const ch = fs * 1.0;  // line-height:1.0
+      const cw = fs * 0.62;  // monospace-ish factor
+      const ch = fs * 1.0;   // line-height:1.0
       const gx = Math.floor(px / cw);
       const gy = Math.floor(py / ch);
-      const R = 3; // ripple radius (cells)
+      const R = 3;
       for (let y=-R; y<=R; y++){
         for (let x=-R; x<=R; x++){
           if (x*x + y*y <= R*R){
-            disturb.set(`${gx+x},${gy+y}`, 6 + ((R - Math.hypot(x,y))|0)); // ttl varies
+            disturb.set(`${gx+x},${gy+y}`, 6 + ((R - Math.hypot(x,y))|0));
           }
         }
       }
@@ -236,63 +236,48 @@
     addEventListener("pointermove", e => { if (e.buttons) disturbAt(e.clientX, e.clientY); });
     addEventListener("pointerdown", e => disturbAt(e.clientX, e.clientY));
 
-    // ---------------- typing ----------------
-    const MAX_LEN = 18;
-    addEventListener("keydown", (e)=>{
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
-
-      if (e.key === "Backspace"){
-        text = text.slice(0,-1) || " ";
-        e.preventDefault(); return;
-      }
-      if (e.key === "Escape"){
-        text = "RAYLUS";
-        saver = false; wrap.style.transform = ""; pos={x:0,y:0};
-        return;
-      }
-      if (e.key === "r"){ paletteIndex = (paletteIndex + 1) % PALETTES.length; return; }
-      if (e.key === "i"){
+    // ------- hotkeys -------
+    addEventListener("keydown", (e) => {
+      if (e.key === "r") { paletteIndex = (paletteIndex + 1) % PALETTES.length; }
+      if (e.key === "i") {
         const root = document.documentElement;
         const cs = getComputedStyle(root);
         const bg = cs.getPropertyValue("--bg").trim();
         const fg = cs.getPropertyValue("--fg").trim();
         root.style.setProperty("--bg", fg);
         root.style.setProperty("--fg", bg);
-        invert = !invert;
-        return;
       }
-      if (e.key === "."){ blink = !blink; art.classList.toggle("blink", blink); return; }
-      if (e.key === "f"){
+      if (e.key === ".") { art.classList.toggle("blink"); }
+      if (e.key === "f") {
         document.fullscreenElement ? document.exitFullscreen() :
           document.body.requestFullscreen().catch(()=>{});
-        return;
-      }
-      if (e.key === "s"){ // screensaver toggle
-        saver = !saver;
-        if (!saver){ wrap.style.transform = ""; pos={x:0,y:0}; }
-        else {
-          // randomize initial direction slightly each time
-          vel.x = (Math.random()<.5?-1:1) * (100 + Math.random()*80);
-          vel.y = (Math.random()<.5?-1:1) * (80  + Math.random()*80);
-        }
-        return;
-      }
-
-      // printable
-      if (e.key.length === 1){
-        const ch = e.key.toUpperCase();
-        if (!(ch in GLYPHS) && ch !== " "){
-          // we only have A-Z and space; ignore others
-          return;
-        }
-        if (text.length >= MAX_LEN) text = text.slice(1);
-        text += ch;
       }
     });
 
-    // ---------------- boot ----------------
-    paint();
-    requestAnimationFrame(tick);
+    // ------- boot -------
+    // initial paint and size, then enter RAF loop
+    art.textContent = renderWord(WORD);
+    // measure after first paint so wrap has size
+    requestAnimationFrame(() => {
+      measureBounds();
+      // seed pos to a random point; randomize direction a bit
+      pos.x = Math.random() * maxX;
+      pos.y = Math.random() * maxY;
+      vel.x *= (Math.random()<.5 ? -1 : 1);
+      vel.y *= (Math.random()<.5 ? -1 : 1);
+    });
+    addEventListener("resize", measureBounds);
+
+    let last = performance.now();
+    function frame(now){
+      const dt = (now - last) / 1000;
+      last = now;
+      driftColors(dt);
+      stepBounce(dt);
+      paint();
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
   </script>
 </body>
 </html>
