@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="color-scheme" content="dark"/>
   <title>RAYLUS</title>
-  <meta name="description" content="ascii glyphs."/>
+  <meta name="description" content="pre-alpha v0.0.20"/>
   <meta name="robots" content="index,follow"/>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32'/%3E%3C/svg%3E">
   <style>
@@ -27,6 +27,8 @@
 
     .stage{ position:relative; width:100vw; height:100svh; isolation:isolate; padding:var(--pad); }
     .layer{position:absolute; inset:0; pointer-events:none}
+
+    /* light-source background (subtle, futuristic) */
     .lights::before{
       content:""; position:absolute; inset:-8%;
       background:
@@ -41,6 +43,7 @@
           transparent 48%, rgba(0,0,0,.18) 100%);
       filter: blur(.2px); opacity:.9;
     }
+
     .grid::before{
       content:""; position:absolute; inset:0;
       background-image:
@@ -49,6 +52,7 @@
       background-size:var(--grid-size) var(--grid-size), var(--grid-size) var(--grid-size);
       mix-blend-mode:overlay; opacity:.85;
     }
+
     .scan::before{
       content:""; position:absolute; inset:0;
       background-image:
@@ -56,6 +60,7 @@
         radial-gradient(260px 100px at 50% -30px, rgba(255,255,255,.03), transparent);
       mix-blend-mode:overlay; opacity:.16;
     }
+
     .sweep{ --sweep-alpha:.028; position:absolute; inset:-18%;
       background:linear-gradient(45deg, rgba(180,210,255,var(--sweep-alpha)) 0%, rgba(0,0,0,0) 50%, rgba(180,210,255,var(--sweep-alpha)) 100%);
       mix-blend-mode:plus-lighter; opacity:.22; transform-origin:12% 10%;
@@ -64,7 +69,8 @@
     @keyframes sweep{ to { transform:rotate(360deg); } }
     @media (prefers-reduced-motion: reduce){ .sweep{ animation:none } }
 
-    .center{ position:absolute; inset:0; display:grid; place-items:center; pointer-events:none; }
+    /* center: must receive pointer events so glyph is clickable */
+    .center{ position:absolute; inset:0; display:grid; place-items:center; pointer-events:auto; }
     @media (max-width: 768px), (hover:none), (pointer:coarse){
       .stage{ padding:var(--mobile-pad); }
       .center{ justify-items:center; align-items:start; }
@@ -73,6 +79,7 @@
     .wrap{ position:absolute; left:0; top:0; will-change:transform }
     .box{ display:inline-block; pointer-events:auto }
 
+    /* ASCII glyph */
     pre.ascii{
       margin:0; white-space:pre; line-height:1.0;
       font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
@@ -80,9 +87,16 @@
       letter-spacing:.02em; text-rendering:optimizeSpeed; cursor:pointer;
       filter: drop-shadow(0 0 .22rem rgba(0,0,0,.5)) drop-shadow(0 0 .1rem rgba(140,180,255,.1));
       color: var(--accent);
-      transition: filter .15s ease, opacity .15s ease;
+      transition: filter .15s ease, opacity .15s ease, transform .2s ease;
+      touch-action: manipulation; /* snappier taps */
     }
-    pre.ascii:hover{ filter: drop-shadow(0 0 .3rem rgba(120,170,255,.25)) drop-shadow(0 0 .12rem rgba(140,180,255,.18)); }
+    /* hover reaction */
+    pre.ascii.hovered{
+      filter:
+        drop-shadow(0 0 .38rem rgba(140,180,255,.25))
+        drop-shadow(0 0 .18rem rgba(140,180,255,.18));
+      transform: translateZ(0) scale(1.015);
+    }
 
     .noise{ position:absolute; inset:-25vmax;
       background:repeating-conic-gradient(from 0deg, rgba(255,255,255,.01) 0 .25deg, transparent .25deg .5deg);
@@ -175,7 +189,7 @@
       <a href="https://www.linkedin.com/in/james-engineer" target="_blank" rel="noopener" title="LinkedIn">
         <span>in</span>
       </a>
-      <a href="mailto:hello@raylus.com" title="Email hello@raylus.com">
+      <a href="mailto:hello@raylus.com" title="Email James">
         <span>✉︎</span>
       </a>
     </nav>
@@ -200,70 +214,58 @@
 
         <h2>Professional Summary</h2>
         <p class="muted">
-          UX-focused software engineer with 15+ years in tech, including 8 years leading JPL/NASA external sites.
-          Delivers user-centric products at scale, balancing design systems, accessibility, performance, and technical depth.
-          Recent work on NASA’s Luna (AI-powered data platform): designed & mentored frontend features, improved docs, and supported reliable releases.
+          UX-focused software engineer with deep experience shipping user-centric products at scale. Led and contributed to high-visibility NASA/JPL experiences,
+          balancing design systems, accessibility, performance, and clear documentation. Recently: frontend leadership and release stability on an AI-powered data platform.
         </p>
 
-        <h2>Core Skills</h2>
+        <h2>Core Skills (UX-leaning)</h2>
         <div class="row">
+          <span class="pill">TypeScript</span>
           <span class="pill">React</span>
           <span class="pill">Vue</span>
           <span class="pill">Angular</span>
-          <span class="pill">TypeScript</span>
-          <span class="pill">TailwindCSS</span>
-          <span class="pill">Material UI</span>
-          <span class="pill">PrimeNG</span>
-          <span class="pill">Accessibility</span>
           <span class="pill">Design Systems</span>
+          <span class="pill">Accessibility</span>
           <span class="pill">Storybook</span>
-          <span class="pill">Playwright</span>
-          <span class="pill">Mentorship</span>
+          <span class="pill">Testing (Playwright)</span>
           <span class="pill">Performance</span>
+          <span class="pill">Mentorship</span>
         </div>
 
         <h2>Experience</h2>
         <ul>
-          <li><strong>Luna Project (NASA JSC)</strong> — Senior Frontend & DevOps Engineer (Jan 2025–Present)<br/>
-            Designed & shipped Angular/PrimeNG features (object tree, announcements, advanced tables), mentored devs, maintained CI/patching across release lines, and authored user-facing guides to clarify complex workflows.  [oai_citation:0‡James_Ray_Resume_v2025.3.pdf](file-service://file-V8W1C8eTTRwM1PqX9VpWnd)
+          <li><strong>Senior Frontend / UX Engineer</strong> — AI data platform (2025–Present)<br/>
+            Designed & shipped Angular features (navigation trees, announcements, rich tables), mentored devs, improved docs, and supported stable patch releases.
           </li>
-          <li><strong>NASA Jet Propulsion Laboratory</strong> — Enterprise Apps Software Engineer III / Technical Lead (Nov 2015–Nov 2024)<br/>
-            Tech lead for flagship sites (science.nasa.gov, jpl.nasa.gov); drove modernization (Nuxt, TypeScript), event-driven middleware, and cross-site UX standards; mentored engineers and aligned stakeholders.  [oai_citation:1‡James_Ray_Resume_v2025.3.pdf](file-service://file-V8W1C8eTTRwM1PqX9VpWnd)
+          <li><strong>Technical Lead / Software Engineer</strong> — NASA JPL Enterprise Apps (2015–2024)<br/>
+            Led modernization of flagship sites; introduced TypeScript/Nuxt patterns, design-system consistency, and performance improvements; mentored engineers and aligned stakeholders.
           </li>
-          <li><strong>Manufactur Agency</strong> — Web Developer (Jan 2013–Nov 2015)<br/>
-            Built high-profile WordPress/e-commerce sites; collaborated with creative teams to deliver polished, performant, responsive experiences.  [oai_citation:2‡James_Ray_Resume_v2025.3.pdf](file-service://file-V8W1C8eTTRwM1PqX9VpWnd)
+          <li><strong>Web Developer</strong> — Creative/Agency (2013–2015)<br/>
+            Built polished, responsive sites with collaborative design workflows and attention to detail.
           </li>
         </ul>
 
         <h2>Selected Projects</h2>
         <ul>
-          <li>science.nasa.gov — large-scale redesign & content migration; improved engagement, accessibility, and clarity.  [oai_citation:3‡James_Ray_Resume_v2025.3.pdf](file-service://file-V8W1C8eTTRwM1PqX9VpWnd)</li>
-          <li>jpl.nasa.gov — headless CMS (Wagtail + Nuxt); streamlined workflows, reduced load times.  [oai_citation:4‡James_Ray_Resume_v2025.3.pdf](file-service://file-V8W1C8eTTRwM1PqX9VpWnd)</li>
-          <li>Multi-tenant Django CMS — internal JPL platform; NASA Agency Honor Award (2022).  [oai_citation:5‡James_Ray_Resume_v2025.3.pdf](file-service://file-V8W1C8eTTRwM1PqX9VpWnd)</li>
-          <li>Luna UX Enhancements — Angular/PrimeNG components, stable patch releases, operator guides.  [oai_citation:6‡James_Ray_Resume_v2025.3.pdf](file-service://file-V8W1C8eTTRwM1PqX9VpWnd)</li>
+          <li>Large-scale public science site — redesign, accessibility uplift, content migration.</li>
+          <li>Institutional site platform — headless CMS, faster builds, better editorial UX.</li>
+          <li>Frontend platform work — component libraries, theming, docs, testing, CI hooks.</li>
         </ul>
 
-        <h2>Awards & Conferences</h2>
-        <ul>
-          <li>Webby Award (2024) — science.nasa.gov; Webby Award (2023) — jpl.nasa.gov.  [oai_citation:7‡James_Ray_Resume_v2025.3.pdf](file-service://file-V8W1C8eTTRwM1PqX9VpWnd)</li>
-          <li>NASA Agency Honor Awards — 2022 (Multi-tenant Django CMS), 2025 (Web Modernization).  [oai_citation:8‡James_Ray_Resume_v2025.3.pdf](file-service://file-V8W1C8eTTRwM1PqX9VpWnd)</li>
-          <li>Speaker/Attendee — DjangoCon 2022; multiple Wagtail conferences; Python community events.  [oai_citation:9‡James_Ray_Resume_v2025.3.pdf](file-service://file-V8W1C8eTTRwM1PqX9VpWnd)</li>
-        </ul>
-
-        <h2>Also Comfortable With (DevOps)</h2>
+        <h2>Also Comfortable With</h2>
         <p class="muted">
-          CI/CD pipelines (GitHub Actions, GitLab CI/CD), version patching, release stability; Terraform/AWS (including GovCloud) where relevant to project goals.  [oai_citation:10‡James_Ray_Resume_v2025.4.pdf](file-service://file-3hfagaZEd5v9rKAaafCwCi)
+          CI/CD (GitHub Actions/GitLab), release versioning/patching, basic cloud/infra when needed to support product goals.
         </p>
 
         <h2>Contact</h2>
-        <p class="muted">LinkedIn: <a href="https://www.linkedin.com/in/jamesray" target="_blank" rel="noopener">/in/jamesray</a> · Email: <a href="mailto:hello@raylus.com">hello@raylus.com</a></p>
+        <p class="muted">LinkedIn: <a href="https://www.linkedin.com/in/james-engineer" target="_blank" rel="noopener">/in/james-engineer</a> · Email: <a href="mailto:hello@raylus.com">hello@raylus.com</a></p>
       </div>
     </section>
   </div>
 
   <script>
     // ---------- version/meta ----------
-    const VERSION = "pre-alpha v0.0.18";
+    const VERSION = "pre-alpha v0.0.20";
     const COPYRIGHT = "© James Ray 2025";
     document.getElementById("meta").textContent =
       `${VERSION} — full site coming soon — ${COPYRIGHT}`;
@@ -325,14 +327,34 @@
     }
 
     // ---------- DOM wiring ----------
-    const pre=document.createElement('pre'); pre.className='ascii'; pre.setAttribute('aria-label','ASCII art (click to open resume)');
+    const pre=document.createElement('pre');
+    pre.className='ascii';
+    pre.setAttribute('aria-label','ASCII art (click to open resume)');
+    pre.setAttribute('role','link');
+    pre.setAttribute('tabindex','0');
+
     const center=document.getElementById('center'), centerBox=document.getElementById('centerBox');
     const wrap=document.getElementById('wrap'), wrapBox=document.getElementById('wrapBox');
     centerBox.appendChild(pre);
+
+    // Navigation from glyph
     pre.addEventListener('click', ()=> { location.hash = '#/resume'; });
+    pre.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); location.hash = '#/resume'; }
+    });
+
+    // Scoped pointer disturb to glyph only
+    pre.addEventListener("pointerdown", e=>pointerDisturb(pre,e.clientX,e.clientY));
+    pre.addEventListener("pointermove", e=>{ if(e.buttons) pointerDisturb(pre,e.clientX,e.clientY); });
+
+    // Hover state
+    let isHovering=false, hoverEase=0;
+    pre.addEventListener('mouseenter', ()=>{ isHovering=true; pre.classList.add('hovered'); });
+    pre.addEventListener('mouseleave', ()=>{ isHovering=false; pre.classList.remove('hovered'); });
 
     // ---------- line opacity ----------
-    let tAccum=0; function lineOpacity(i){
+    let tAccum=0;
+    function lineOpacity(i){
       const base=0.86 + 0.05*Math.sin(tAccum*0.7 + i*0.78);
       const jitter=0.006*(Math.sin(tAccum*2.7 + i*1.9));
       return Math.min(0.93, Math.max(0.82, base+jitter));
@@ -350,6 +372,7 @@
     // ---------- screensaver physics ----------
     let saver=false, paused=false;
     let pos={x:0,y:0}, vel={x:110,y:92}, maxX=0,maxY=0;
+
     function measureBounds(){
       const sw=document.documentElement.clientWidth, sh=document.documentElement.clientHeight;
       const bw=wrapBox.offsetWidth, bh=wrapBox.offsetHeight;
@@ -375,13 +398,33 @@
       pre.style.fontSize = `calc(${base} * ${ (1+nudged).toFixed(3) })`;
     }
     setFontScale();
+
     function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]))}
+
     function paint(){
       const rows = build();
-      let lines = rows.map((line,i)=> mutateLine(line, i%2?0.004:0.002));
-      rowShift(lines,0.002);
+
+      // base glitch chance by row
+      const baseA = 0.002, baseB = 0.004;
+
+      // ease hover factor (0..1)
+      const boost = 0.006 * hoverEase;
+
+      let lines = rows.map((line,i)=> {
+        const chance = (i % 2 ? baseB : baseA) + boost;
+        return mutateLine(line, chance);
+      });
+
+      // a touch more row shifting on hover
+      rowShift(lines, 0.002 + 0.002 * hoverEase);
+
       applyDisturb(lines);
-      pre.innerHTML = lines.map((ln,i)=>`<span class="row" style="opacity:${lineOpacity(i)}">${escapeHtml(ln)}</span>`).join("\n");
+
+      pre.innerHTML = lines.map((ln,i)=>{
+        const op = lineOpacity(i) + 0.02 * hoverEase * Math.sin((tAccum + i*0.13) * 1.4);
+        const opacity = Math.max(0.78, Math.min(0.96, op));
+        return `<span class="row" style="opacity:${opacity}">${escapeHtml(ln)}</span>`;
+      }).join("\n");
     }
 
     // ---------- info + fps ----------
@@ -402,6 +445,11 @@
       const dt=(now-last)/1000; last=now; tAccum+=dt;
       tickFps(now);
       drift(dt);
+
+      // hover easing
+      const target = isHovering ? 1 : 0;
+      hoverEase += (target - hoverEase) * Math.min(1, dt * 10);
+
       if(saver) stepBounce(dt);
       paint();
       renderInfo();
@@ -410,9 +458,7 @@
     paint(); requestAnimationFrame(frame);
 
     // ---------- input ----------
-    addEventListener("pointerdown", e=>pointerDisturb(pre,e.clientX,e.clientY));
-    addEventListener("pointermove", e=>{ if(e.buttons) pointerDisturb(pre,e.clientX,e.clientY); });
-
+    // spacebar pauses screensaver motion; 's' toggles screensaver
     addEventListener("keydown", e=>{
       if(currentRoute()==="resume" && e.key==="Escape"){ location.hash="#/"; return; }
       if(e.code==="Space"){ if(saver){ paused=!paused; } e.preventDefault(); return; }
@@ -477,8 +523,9 @@
     addEventListener('hashchange', applyRoute);
     applyRoute();
 
+    // click outside card returns (nice on mobile)
     resumeEl.addEventListener('click', (e)=>{ if(e.target === resumeEl) location.hash="#/"; });
   </script>
 </body>
 </html>
-<!-- pre-alpha v0.0.18 -->
+<!-- pre-alpha v0.0.20 -->
