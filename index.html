@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="color-scheme" content="dark"/>
   <title>RAYLUS</title>
   <meta name="description" content="ascii glyphs."/>
@@ -10,18 +10,16 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32'/%3E%3C/svg%3E">
   <style>
     :root {
-      /* dark by default */
       --bg: #07090b;
       --fg: #e7ecef;
       --dim: #87a0aa;
       --ring: #0f1318;
-      --hueA: 230;  /* drifted in JS */
+      --hueA: 230; /* drifted in JS */
       --hueB: 280;
       --grid-alpha: .04;
     }
     * { box-sizing: border-box }
     html, body { height: 100% }
-
     body {
       margin: 0;
       color: var(--fg);
@@ -29,7 +27,7 @@
       user-select: none;
       overflow: hidden;
 
-      /* FUTURISTIC TERMINAL BACKDROP (dark-only) */
+      /* Futuristic terminal backdrop (dark only) */
       background-image:
         /* grid (y, x) */
         linear-gradient(rgba(255,255,255,var(--grid-alpha)) 1px, transparent 1px),
@@ -50,12 +48,7 @@
       place-items: center;
     }
 
-    .stage {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      isolation: isolate;
-    }
+    .stage { position: relative; width: 100%; height: 100%; isolation: isolate; }
     .stage::before {
       content: "";
       position: absolute; inset: 0;
@@ -77,20 +70,15 @@
     }
 
     /* screensaver container (bounces as a whole) */
-    .wrap {
-      position: absolute;
-      left: 0; top: 0;
-      will-change: transform;
-    }
-
-    .box { display: inline-block; pointer-events: auto; }
+    .wrap { position: absolute; left: 0; top: 0; will-change: transform; }
+    .box  { display: inline-block; pointer-events: auto; }
 
     pre.ascii {
       margin: 0;
       white-space: pre;
       line-height: 1.0;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: clamp(10px, 3vw, 24px);
+      font-size: clamp(12px, 4.5vw, 24px); /* a touch larger on small screens */
       letter-spacing: .02em;
       text-rendering: optimizeSpeed;
       filter: drop-shadow(0 0 0.35rem rgba(0,0,0,.6));
@@ -111,6 +99,10 @@
       text-align: center; font-size: 12px; color: oklch(0.78 0.04 var(--hueB));
       opacity: .85;
     }
+    /* Hide HUD on touch/coarse pointers (most mobile) */
+    @media (hover: none), (pointer: coarse) {
+      .hud { display: none; }
+    }
 
     .blink { animation: b 2.4s ease-in-out infinite; }
     @keyframes b { 0%,96%,100%{opacity:1} 97%{opacity:.55} 98%{opacity:.18} 99%{opacity:.92} }
@@ -118,11 +110,10 @@
 </head>
 <body>
   <div class="stage">
-    <!-- one <pre> only; we move it between these two containers -->
+    <!-- one <pre> that we move between containers -->
     <div class="center" id="center">
       <div class="box" id="centerBox"></div>
     </div>
-
     <div class="wrap" id="wrap" hidden>
       <div class="box" id="wrapBox"></div>
     </div>
@@ -135,10 +126,10 @@
   </div>
 
   <script>
-    // ---------- helpers ----------
+    // -------- helpers --------
     const pick = arr => arr[(Math.random()*arr.length)|0];
 
-    // ---------- glyphs ----------
+    // -------- glyphs --------
     const GLYPHS = {
       R:["████ ","█   █","█   █","████ ","█ █  ","█  █ ","█   █"],
       A:[" ███ ","█   █","█   █","█████","█   █","█   █","█   █"],
@@ -201,27 +192,27 @@
       }
     }
 
-    // one <pre>, created once
+    // one <pre>
     const pre = document.createElement('pre');
     pre.className = 'ascii';
     pre.setAttribute('aria-label','ASCII art');
 
     // containers
-    const center = document.getElementById('center');
-    const centerBox = document.getElementById('centerBox');
-    const wrap = document.getElementById('wrap');
-    const wrapBox = document.getElementById('wrapBox');
+    const center   = document.getElementById('center');
+    const centerBox= document.getElementById('centerBox');
+    const wrap     = document.getElementById('wrap');
+    const wrapBox  = document.getElementById('wrapBox');
 
-    // initial mount: centered dark mode
+    // initial mount
     centerBox.appendChild(pre);
 
     // painting
-    function paintInto(el){
+    function paint(){
       const on = PALETTES[paletteIndex].on, off = PALETTES[paletteIndex].off;
       let txt = renderWord(on, off);
       const lines = txt.split("\n").map((line,i)=> mutateLine(line, i%2?0.012:0.006).split(""));
       applyDisturb(lines);
-      el.textContent = lines.map(a=>a.join("")).join("\n");
+      pre.textContent = lines.map(a=>a.join("")).join("\n");
     }
 
     // color drift
@@ -235,8 +226,8 @@
     }
 
     // screensaver state
-    let saver = false;      // off by default
-    let paused = false;     // space toggles when saver=true
+    let saver = false;   // off by default
+    let paused = false;  // space toggles when saver=true
     let last = performance.now();
 
     // precise bounce
@@ -268,41 +259,24 @@
     function frame(now){
       const dt = (now - last)/1000; last = now;
       drift(dt);
-      if (saver){
-        stepBounce(dt);
-      }
-      paintInto(pre);
+      if (saver) stepBounce(dt);
+      paint();
       requestAnimationFrame(frame);
     }
-
-    // mount and start
-    paintInto(pre);
     requestAnimationFrame(frame);
 
-    // pointer ripple
-    addEventListener("pointermove", e => {
-      if (e.buttons) pointerDisturb(pre, e.clientX, e.clientY);
-    });
-    addEventListener("pointerdown", e => {
-      pointerDisturb(pre, e.clientX, e.clientY);
-    });
+    // pointer ripple (works for touch too)
+    addEventListener("pointerdown", e => pointerDisturb(pre, e.clientX, e.clientY));
+    addEventListener("pointermove", e => { if (e.buttons) pointerDisturb(pre, e.clientX, e.clientY); });
 
-    // hotkeys
+    // hotkeys (desktop-visible; harmless on mobile)
     addEventListener("keydown", (e) => {
-      if (e.code === "Space") { // pause/resume (only affects saver motion)
-        if (saver){ paused = !paused; }
-        e.preventDefault();
-        return;
-      }
+      if (e.code === "Space") { if (saver){ paused = !paused; } e.preventDefault(); return; }
       if (e.key === "s") {
-        saver = !saver;
-        paused = false;
+        saver = !saver; paused = false;
         if (saver) {
-          // move <pre> to bouncing container
-          wrap.hidden = false;
-          center.hidden = true;
+          wrap.hidden = false; center.hidden = true;
           wrapBox.appendChild(pre);
-          // measure and initialize motion
           requestAnimationFrame(() => {
             measureBounds();
             pos.x = Math.random() * maxX;
@@ -312,9 +286,7 @@
             wrap.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
           });
         } else {
-          // move <pre> back to centered container
-          wrap.hidden = true;
-          center.hidden = false;
+          wrap.hidden = true; center.hidden = false;
           wrap.style.transform = "";
           pos = {x:0,y:0};
           centerBox.appendChild(pre);
