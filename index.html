@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="color-scheme" content="dark"/>
   <title>RAYLUS</title>
-  <meta name="description" content="pre-alpha v0.0.21"/>
+  <meta name="description" content="pre-alpha v0.0.23"/>
   <meta name="robots" content="index,follow"/>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32'/%3E%3C/svg%3E">
   <style>
@@ -69,7 +69,7 @@
     @keyframes sweep{ to { transform:rotate(360deg); } }
     @media (prefers-reduced-motion: reduce){ .sweep{ animation:none } }
 
-    /* center: must receive pointer events so glyph is clickable */
+    /* center containers */
     .center{ position:absolute; inset:0; display:grid; place-items:center; pointer-events:auto; }
     @media (max-width: 768px), (hover:none), (pointer:coarse){
       .stage{ padding:var(--mobile-pad); }
@@ -88,14 +88,19 @@
       filter: drop-shadow(0 0 .22rem rgba(0,0,0,.5)) drop-shadow(0 0 .1rem rgba(140,180,255,.1));
       color: var(--accent);
       transition: filter .15s ease, opacity .15s ease, transform .2s ease;
-      touch-action: manipulation; /* snappier taps */
+      touch-action: manipulation;
     }
-    /* hover reaction */
     pre.ascii.hovered{
       filter:
         drop-shadow(0 0 .38rem rgba(140,180,255,.25))
         drop-shadow(0 0 .18rem rgba(140,180,255,.18));
       transform: translateZ(0) scale(1.015);
+    }
+    /* glyph dim when resume open */
+    pre.ascii.dim {
+      opacity:.05; pointer-events:none;
+      filter: grayscale(1) blur(.3px) drop-shadow(0 0 .1rem rgba(0,0,0,.2));
+      transition: opacity .2s ease, filter .2s ease;
     }
 
     .noise{ position:absolute; inset:-25vmax;
@@ -192,8 +197,7 @@
       <a href="mailto:hello@raylus.com" title="Email James">
         <span>✉︎</span>
       </a>
-      <!-- NEW: resume icon opens hash route -->
-      <a href="#/resume" title="Resume (pre-alpha)">
+      <a href="#/resume" title="Resume">
         <span>📄</span>
       </a>
     </nav>
@@ -214,7 +218,10 @@
       <div class="card">
         <a href="#/" class="back">← BACK</a>
         <h1>James Ray</h1>
-        <div class="sub">UX Engineer · Senior Technical Lead & Software Engineer — Altadena, CA · <a href="mailto:hello@raylus.com">hello@raylus.com</a> · <a href="https://raylus.com" target="_blank" rel="noopener">raylus.com</a></div>
+        <div class="sub">
+          UX Engineer · Senior Technical Lead & Software Engineer — Altadena, CA ·
+          <a href="mailto:hello@raylus.com">hello@raylus.com</a>
+        </div>
 
         <h2>Professional Summary</h2>
         <p class="muted">
@@ -256,20 +263,31 @@
           <li>Frontend platform work — component libraries, theming, docs, testing, CI hooks.</li>
         </ul>
 
+        <h2>Awards & Conferences</h2>
+        <ul id="awards-list" class="muted">
+          <!-- Replace with your exact items from the PDF resume; keeping placeholders to avoid inventing details -->
+          <li><em>(Add exact award #1 and year)</em></li>
+          <li><em>(Add exact award #2 and year)</em></li>
+          <li><em>(Add relevant conference talk/panel and year)</em></li>
+        </ul>
+
         <h2>Also Comfortable With</h2>
         <p class="muted">
           CI/CD (GitHub Actions/GitLab), release versioning/patching, basic cloud/infra when needed to support product goals.
         </p>
 
         <h2>Contact</h2>
-        <p class="muted">LinkedIn: <a href="https://www.linkedin.com/in/james-engineer" target="_blank" rel="noopener">/in/james-engineer</a> · Email: <a href="mailto:hello@raylus.com">hello@raylus.com</a></p>
+        <p class="muted">
+          LinkedIn: <a href="https://www.linkedin.com/in/james-engineer" target="_blank" rel="noopener">/in/james-engineer</a> ·
+          Email: <a href="mailto:hello@raylus.com">hello@raylus.com</a>
+        </p>
       </div>
     </section>
   </div>
 
   <script>
     // ---------- version/meta ----------
-    const VERSION = "pre-alpha v0.0.21";
+    const VERSION = "pre-alpha v0.0.23";
     const COPYRIGHT = "© James Ray 2025";
     document.getElementById("meta").textContent =
       `${VERSION} — full site coming soon — ${COPYRIGHT}`;
@@ -290,8 +308,17 @@
     };
     const WORD="RAYLUS", ROWS=7;
 
-    const PALETTES=[ {on:"█",off:" "},{on:"▓",off:" "},{on:"▒",off:" "},{on:"⣿",off:" "},{on:"#",off:"."},{on:"■",off:"·"},{on:"@",off:"."} ];
-    let paletteIndex=0;
+    const PALETTES=[
+      {on:"█",off:" "},
+      {on:"▓",off:" "},
+      {on:"▒",off:" "},
+      {on:"⣿",off:" "},
+      {on:"#",off:"."},
+      {on:"■",off:"·"},
+      {on:"@",off:"."}
+    ];
+    // RANDOM palette on load:
+    let paletteIndex = Math.floor(Math.random()*PALETTES.length);
 
     function build(on=PALETTES[paletteIndex].on, off=PALETTES[paletteIndex].off){
       const rows=Array.from({length:ROWS},()=> "");
@@ -341,13 +368,13 @@
     const wrap=document.getElementById('wrap'), wrapBox=document.getElementById('wrapBox');
     centerBox.appendChild(pre);
 
-    // Keep glyph navigation (may not fire on some layers, but harmless)
+    // click / keyboard nav from glyph
     pre.addEventListener('click', ()=> { location.hash = '#/resume'; });
     pre.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); location.hash = '#/resume'; }
     });
 
-    // Scoped pointer disturb to glyph only
+    // Disturb on drag/press over glyph only
     pre.addEventListener("pointerdown", e=>pointerDisturb(pre,e.clientX,e.clientY));
     pre.addEventListener("pointermove", e=>{ if(e.buttons) pointerDisturb(pre,e.clientX,e.clientY); });
 
@@ -408,10 +435,7 @@
     function paint(){
       const rows = build();
 
-      // base glitch chance by row
       const baseA = 0.002, baseB = 0.004;
-
-      // ease hover factor (0..1)
       const boost = 0.006 * hoverEase;
 
       let lines = rows.map((line,i)=> {
@@ -419,9 +443,7 @@
         return mutateLine(line, chance);
       });
 
-      // a touch more row shifting on hover
       rowShift(lines, 0.002 + 0.002 * hoverEase);
-
       applyDisturb(lines);
 
       pre.innerHTML = lines.map((ln,i)=>{
@@ -450,7 +472,6 @@
       tickFps(now);
       drift(dt);
 
-      // hover easing
       const target = isHovering ? 1 : 0;
       hoverEase += (target - hoverEase) * Math.min(1, dt * 10);
 
@@ -462,7 +483,6 @@
     paint(); requestAnimationFrame(frame);
 
     // ---------- input ----------
-    // spacebar pauses screensaver motion; 's' toggles screensaver
     addEventListener("keydown", e=>{
       if(currentRoute()==="resume" && e.key==="Escape"){ location.hash="#/"; return; }
       if(e.code==="Space"){ if(saver){ paused=!paused; } e.preventDefault(); return; }
@@ -515,11 +535,17 @@
     function applyRoute(){
       const r = currentRoute();
       if(r === 'resume'){
-        loopPaused = true; // pause landing animation
+        // Dim and disable glyph while viewing resume
+        pre.classList.add('dim');
+        pre.setAttribute('aria-hidden','true');
+        loopPaused = true;
         saver=false; paused=false;
         wrap.hidden=true; center.hidden=false; centerBox.appendChild(pre);
         resumeEl.classList.add('on');
       }else{
+        // Restore glyph
+        pre.classList.remove('dim');
+        pre.removeAttribute('aria-hidden');
         resumeEl.classList.remove('on');
         loopPaused = false;
       }
@@ -527,10 +553,10 @@
     addEventListener('hashchange', applyRoute);
     applyRoute();
 
-    // click outside card returns (nice on mobile)
+    // click outside card to return
     resumeEl.addEventListener('click', (e)=>{ if(e.target === resumeEl) location.hash="#/"; });
   </script>
 </body>
 </html>
-<!-- pre-alpha v0.0.21 -->
+<!-- pre-alpha v0.0.23 -->
  
