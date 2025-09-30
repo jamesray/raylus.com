@@ -3,134 +3,140 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <meta name="color-scheme" content="dark"/>
+  <meta name="color-scheme" content="dark light"/>
   <title>RAYLUS</title>
   <meta name="description" content="ascii glyphs."/>
   <meta name="robots" content="index,follow"/>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32'/%3E%3C/svg%3E">
   <style>
-    :root {
-      --bg: #07090b;
-      --fg: #e7ecef;
-      --dim: #87a0aa;
-      --ring: #0f1318;
-      --hueA: 230; /* drifted in JS */
-      --hueB: 280;
-      --grid-alpha: .04;
+    :root{
+      /* Dark (default) */
+      --bg:#06080a; --fg:#e7ecef; --dim:#87a0aa; --ring:#0f1318;
+      --hueA:230; --hueB:280; --grid-alpha:.045;
     }
-    * { box-sizing: border-box }
-    html, body { height: 100% }
-    body {
-      margin: 0;
-      color: var(--fg);
-      font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif;
-      user-select: none;
-      overflow: hidden;
+    /* Inverted/light brutalist variant (toggled with 'i') */
+    :root.inv{
+      --bg:#e7ecef; --fg:#0a0d10; --dim:#3c4750; --ring:#cfd7de;
+      --grid-alpha:.06;
+    }
 
-      /* Futuristic terminal backdrop (dark only) */
-      background-image:
-        /* grid (y, x) */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; color:var(--fg);
+      font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif;
+      user-select:none; overflow:hidden; display:grid; place-items:center;
+
+      /* FUTURISTIC / GLITCH BACKDROP (animated light source + grid + columns) */
+      background:
+        /* animated sweep light source (rotating) */
+        conic-gradient(from 0deg at 12% 8%, rgba(180,210,255,.10), rgba(0,0,0,0) 35%),
+        /* strong local light source bloom */
+        radial-gradient(1000px 700px at 12% 8%,
+          color-mix(in oklab, oklch(.98 .06 255) 16%, transparent) 0%,
+          color-mix(in oklab, oklch(.95 .05 240) 12%, transparent) 40%,
+          transparent 70%),
+        /* secondary counter light bottom-right */
+        radial-gradient(900px 600px at 92% 92%,
+          color-mix(in oklab, oklch(.96 .05 210) 8%, transparent) 0%,
+          transparent 60%),
+        /* vertical glitch columns */
+        repeating-linear-gradient(90deg,
+          rgba(255,255,255,.03) 0 1px, transparent 1px 18px,
+          rgba(255,255,255,.02) 18px 19px, transparent 19px 34px),
+        /* terminal grid (y then x) */
+        linear-gradient(rgba(0,0,0,calc(var(--grid-alpha) * 0)) 0, rgba(0,0,0,0) 0), /* placeholder for dark/light parity */
+        linear-gradient(90deg, rgba(0,0,0,calc(var(--grid-alpha) * 0)) 0, rgba(0,0,0,0) 0), /* placeholder */
         linear-gradient(rgba(255,255,255,var(--grid-alpha)) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,var(--grid-alpha)) 1px, transparent 1px),
-        /* soft light source */
-        radial-gradient(900px 600px at 12% 8%,
-          color-mix(in oklab, oklch(.98 .05 255) 12%, transparent) 0%,
-          color-mix(in oklab, oklch(.95 .04 235) 8%, transparent) 40%,
-          transparent 70%),
         /* vignette */
-        radial-gradient(1200px 700px at 50% 50%,
-          transparent 40%, rgba(0,0,0,.25) 100%),
+        radial-gradient(1400px 900px at 50% 50%, transparent 45%, rgba(0,0,0,.28) 100%),
         var(--bg);
-      background-size: 24px 24px, 24px 24px, auto, auto, auto;
-      background-blend-mode: overlay, overlay, normal, normal, normal;
-
-      display: grid;
-      place-items: center;
+      background-size:
+        100% 100%, auto, auto,
+        100% 100%,
+        24px 24px, 24px 24px,
+        24px 24px, 24px 24px,
+        auto, auto;
+      background-blend-mode:
+        screen, plus-lighter, screen,
+        soft-light,
+        normal, normal,
+        overlay, overlay,
+        normal, normal;
+      animation: sweep 12s linear infinite;
     }
+    @keyframes sweep{ to { background-position:
+      0 0, 0 0, 0 0,
+      8px 0,       /* columns drift */
+      0 0, 0 0,    /* placeholders */
+      0 -12px, -12px 0,  /* grids */
+      0 0, 0 0; } }
+    @media (prefers-reduced-motion: reduce){ body{animation:none} }
 
-    .stage { position: relative; width: 100%; height: 100%; isolation: isolate; }
-    .stage::before {
-      content: "";
-      position: absolute; inset: 0;
+    .stage{position:relative;width:100%;height:100%;isolation:isolate}
+    .stage::before{
+      content:""; position:absolute; inset:0;
       background-image:
-        repeating-linear-gradient(0deg, rgba(255,255,255,.03), rgba(255,255,255,.03) 1px, transparent 1px, transparent 3px),
+        repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 1px 3px),
         radial-gradient(300px 120px at 50% -30px, rgba(255,255,255,.05), transparent);
-      mix-blend-mode: overlay;
-      pointer-events: none;
-      opacity: .22;
+      mix-blend-mode: overlay; opacity:.22; pointer-events:none;
     }
 
     /* centered (default) */
-    .center {
-      display: grid;
-      place-items: center;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
+    .center{display:grid;place-items:center;width:100%;height:100%;pointer-events:none}
+
+    /* screensaver bouncer */
+    .wrap{position:absolute;left:0;top:0;will-change:transform}
+    .box{display:inline-block;pointer-events:auto}
+
+    pre.ascii{
+      margin:0; white-space:pre; line-height:1.0;
+      font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+      font-size: clamp(12px, 4.5vw, 26px);
+      letter-spacing:.02em; text-rendering:optimizeSpeed;
+      filter: drop-shadow(0 0 .35rem rgba(0,0,0,.65))
+              drop-shadow(0 0 .2rem rgba(140,180,255,.15));
+      color: oklch(.92 .03 var(--hueA));
     }
 
-    /* screensaver container (bounces as a whole) */
-    .wrap { position: absolute; left: 0; top: 0; will-change: transform; }
-    .box  { display: inline-block; pointer-events: auto; }
-
-    pre.ascii {
-      margin: 0;
-      white-space: pre;
-      line-height: 1.0;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: clamp(12px, 4.5vw, 24px); /* a touch larger on small screens */
-      letter-spacing: .02em;
-      text-rendering: optimizeSpeed;
-      filter: drop-shadow(0 0 0.35rem rgba(0,0,0,.6));
-      color: oklch(0.92 0.03 var(--hueA));
+    .noise{
+      position:absolute; inset:-25vmax;
+      background: repeating-conic-gradient(from 0deg, rgba(255,255,255,.02) 0 .25deg, transparent .25deg .5deg);
+      animation:n 1.6s steps(8) infinite; mix-blend-mode:soft-light; opacity:.55; pointer-events:none;
     }
+    @keyframes n{to{transform:translate3d(1.5%,-1%,0)}}
 
-    .noise {
-      position: absolute; inset: -25vmax;
-      background:
-        repeating-conic-gradient(from 0deg, rgba(255,255,255,.02) 0 .25deg, transparent .25deg .5deg);
-      animation: n 1.6s steps(8) infinite;
-      mix-blend-mode: soft-light; opacity: .55; pointer-events: none;
+    .hud{
+      position:absolute; bottom:16px; inset-inline:0;
+      text-align:center; font-size:12px; color:oklch(.78 .04 var(--hueB)); opacity:.85;
     }
-    @keyframes n { to { transform: translate3d(1.5%, -1%, 0); } }
+    /* Hide HUD on touch/coarse pointers */
+    @media (hover:none),(pointer:coarse){ .hud{display:none} }
 
-    .hud {
-      position: absolute; bottom: 16px; inset-inline: 0;
-      text-align: center; font-size: 12px; color: oklch(0.78 0.04 var(--hueB));
-      opacity: .85;
-    }
-    /* Hide HUD on touch/coarse pointers (most mobile) */
-    @media (hover: none), (pointer: coarse) {
-      .hud { display: none; }
-    }
-
-    .blink { animation: b 2.4s ease-in-out infinite; }
-    @keyframes b { 0%,96%,100%{opacity:1} 97%{opacity:.55} 98%{opacity:.18} 99%{opacity:.92} }
+    .blink{animation:b 2.4s ease-in-out infinite}
+    @keyframes b{0%,96%,100%{opacity:1}97%{opacity:.55}98%{opacity:.18}99%{opacity:.92}}
   </style>
 </head>
 <body>
   <div class="stage">
-    <!-- one <pre> that we move between containers -->
-    <div class="center" id="center">
-      <div class="box" id="centerBox"></div>
-    </div>
-    <div class="wrap" id="wrap" hidden>
-      <div class="box" id="wrapBox"></div>
-    </div>
+    <!-- one <pre>; we move it between these -->
+    <div class="center" id="center"><div class="box" id="centerBox"></div></div>
+    <div class="wrap" id="wrap" hidden><div class="box" id="wrapBox"></div></div>
 
     <div class="noise" aria-hidden="true"></div>
     <div class="hud">
       keys: <kbd>r</kbd> palette • <kbd>i</kbd> invert • <kbd>.</kbd> blink • <kbd>f</kbd> fullscreen •
-      <kbd>s</kbd> screensaver • <kbd>space</kbd> pause/resume
+      <kbd>s</kbd> screensaver • <kbd>space</kbd> pause
     </div>
   </div>
 
   <script>
-    // -------- helpers --------
-    const pick = arr => arr[(Math.random()*arr.length)|0];
+    // ---------- tiny utils ----------
+    const pick = a => a[(Math.random()*a.length)|0];
 
-    // -------- glyphs --------
-    const GLYPHS = {
+    // ---------- glyphs ----------
+    const GLYPHS={
       R:["████ ","█   █","█   █","████ ","█ █  ","█  █ ","█   █"],
       A:[" ███ ","█   █","█   █","█████","█   █","█   █","█   █"],
       Y:["█   █"," █ █ ","  █  ","  █  ","  █  ","  █  ","  █  "],
@@ -139,178 +145,143 @@
       S:[" ███ ","█   █","█    "," ███ ","    █","█   █"," ███ "],
       " ":[ "     ","     ","     ","     ","     ","     ","     "]
     };
-    const WORD = "RAYLUS";
-    const ROWS = 7;
+    const WORD="RAYLUS", ROWS=7;
 
-    const PALETTES = [
-      { on:"█", off:" " }, { on:"▓", off:" " }, { on:"▒", off:" " },
-      { on:"⣿",off:" " }, { on:"#", off:"." }, { on:"■", off:"·" }, { on:"@", off:"." }
+    const PALETTES=[
+      {on:"█",off:" "},{on:"▓",off:" "},{on:"▒",off:" "},
+      {on:"⣿",off:" "},{on:"#",off:"."},{on:"■",off:"·"},{on:"@",off:"."}
     ];
-    let paletteIndex = 0;
+    let paletteIndex=0;
 
-    function renderWord(on=PALETTES[paletteIndex].on, off=PALETTES[paletteIndex].off){
-      const rows = Array.from({length:ROWS},()=> "");
-      for (const ch of WORD){
-        const g = GLYPHS[ch] ?? GLYPHS[" "];
-        for (let r=0;r<ROWS;r++){
-          rows[r] += g[r].replaceAll("█",on).replaceAll(" ",off) + "  ";
-        }
+    function render(on=PALETTES[paletteIndex].on, off=PALETTES[paletteIndex].off){
+      const rows=Array.from({length:ROWS},()=> "");
+      for(const ch of WORD){
+        const g=GLYPHS[ch]||GLYPHS[" "];
+        for(let r=0;r<ROWS;r++) rows[r]+=g[r].replaceAll("█",on).replaceAll(" ",off)+"  ";
       }
       return rows.join("\n");
     }
 
-    // glitch / disturbance
-    const GLITCH = ["█","▓","▒","■","⣿","#","@",":","*","+","="];
-    function mutateLine(line, chance){
-      return line.replace(/[^\s]/g, c => Math.random()<chance ? pick(GLITCH) : c);
+    // ---------- glitch layers ----------
+    const GLITCH=["█","▓","▒","■","⣿","#","@",":","*","+","="];
+    function mutateLine(line,chance){ return line.replace(/[^\s]/g,c=>Math.random()<chance?pick(GLITCH):c); }
+    function rowShift(lines,rate=0.007){
+      for(let i=0;i<lines.length;i++){
+        if(Math.random()<rate){
+          const row=lines[i]; const k=(Math.random()<.5?-1:1)*((Math.random()*3)|0);
+          if(k>0) lines[i]=row.slice(k)+row.slice(0,k);
+          else if(k<0){ const kk=-k; lines[i]=row.slice(-kk)+row.slice(0,-kk); }
+        }
+      }
     }
-    const disturb = new Map(); // "x,y" -> ttl
+    const disturb=new Map(); // "x,y" -> ttl
     function applyDisturb(lines){
-      for (const [key,ttl] of disturb){
-        if (ttl<=0){ disturb.delete(key); continue; }
-        const [gx,gy] = key.split(",").map(Number);
-        if (gy>=0 && gy<lines.length){
-          const row = lines[gy];
-          if (gx>=0 && gx<row.length && row[gx] !== " "){ row[gx] = pick(GLITCH); }
+      for(const [key,ttl] of disturb){
+        if(ttl<=0){disturb.delete(key);continue;}
+        const [gx,gy]=key.split(",").map(Number);
+        if(gy>=0&&gy<lines.length){
+          const row=lines[gy].split("");
+          if(gx>=0&&gx<row.length&&row[gx]!==" ") row[gx]=pick(GLITCH);
+          lines[gy]=row.join("");
         }
-        disturb.set(key, ttl-1);
+        disturb.set(key,ttl-1);
       }
     }
-    function pointerDisturb(preEl, clientX, clientY){
-      const r = preEl.getBoundingClientRect();
-      const px = clientX - r.left, py = clientY - r.top;
-      const fs = parseFloat(getComputedStyle(preEl).fontSize) || 16;
-      const cw = fs * 0.62, ch = fs * 1.0;
-      const gx = Math.floor(px / cw), gy = Math.floor(py / ch);
-      const R = 3;
-      for (let y=-R; y<=R; y++){
-        for (let x=-R; x<=R; x++){
-          if (x*x + y*y <= R*R){
-            disturb.set(`${gx+x},${gy+y}`, 6 + ((R - Math.hypot(x,y))|0));
-          }
-        }
-      }
+    function pointerDisturb(preEl,x,y){
+      const r=preEl.getBoundingClientRect();
+      const px=x-r.left, py=y-r.top;
+      const fs=parseFloat(getComputedStyle(preEl).fontSize)||16;
+      const cw=fs*0.62, ch=fs*1.0;
+      const gx=Math.floor(px/cw), gy=Math.floor(py/ch);
+      const R=3;
+      for(let yy=-R;yy<=R;yy++)for(let xx=-R;xx<=R;xx++)
+        if(xx*xx+yy*yy<=R*R) disturb.set(`${gx+xx},${gy+yy}`, 6+((R-Math.hypot(xx,yy))|0));
     }
 
-    // one <pre>
-    const pre = document.createElement('pre');
-    pre.className = 'ascii';
-    pre.setAttribute('aria-label','ASCII art');
-
-    // containers
-    const center   = document.getElementById('center');
-    const centerBox= document.getElementById('centerBox');
-    const wrap     = document.getElementById('wrap');
-    const wrapBox  = document.getElementById('wrapBox');
-
-    // initial mount
+    // ---------- DOM wiring ----------
+    const pre=document.createElement('pre'); pre.className='ascii'; pre.setAttribute('aria-label','ASCII art');
+    const center=document.getElementById('center'), centerBox=document.getElementById('centerBox');
+    const wrap=document.getElementById('wrap'), wrapBox=document.getElementById('wrapBox');
     centerBox.appendChild(pre);
 
-    // painting
-    function paint(){
-      const on = PALETTES[paletteIndex].on, off = PALETTES[paletteIndex].off;
-      let txt = renderWord(on, off);
-      const lines = txt.split("\n").map((line,i)=> mutateLine(line, i%2?0.012:0.006).split(""));
-      applyDisturb(lines);
-      pre.textContent = lines.map(a=>a.join("")).join("\n");
-    }
-
-    // color drift
-    let hueA = 230, hueB = 280;
+    // ---------- color drift ----------
+    let hueA=230,hueB=280;
     function drift(dt){
-      hueA = (hueA +  8*dt) % 360;
-      hueB = (hueB + 13*dt) % 360;
-      const root = document.documentElement;
-      root.style.setProperty("--hueA", hueA.toFixed(2));
-      root.style.setProperty("--hueB", hueB.toFixed(2));
+      hueA=(hueA+8*dt)%360; hueB=(hueB+13*dt)%360;
+      const root=document.documentElement;
+      root.style.setProperty('--hueA',hueA.toFixed(2));
+      root.style.setProperty('--hueB',hueB.toFixed(2));
     }
 
-    // screensaver state
-    let saver = false;   // off by default
-    let paused = false;  // space toggles when saver=true
-    let last = performance.now();
-
-    // precise bounce
-    let pos = { x: 0, y: 0 }, vel = { x: 140, y: 110 };
-    let maxX = 0, maxY = 0;
-
+    // ---------- screensaver physics ----------
+    let saver=false, paused=false;
+    let pos={x:0,y:0}, vel={x:140,y:110}, maxX=0,maxY=0;
     function measureBounds(){
-      const sw = document.documentElement.clientWidth;
-      const sh = document.documentElement.clientHeight;
-      const bw = wrapBox.offsetWidth;
-      const bh = wrapBox.offsetHeight;
-      maxX = Math.max(0, sw - bw);
-      maxY = Math.max(0, sh - bh);
-      pos.x = Math.min(Math.max(pos.x, 0), maxX);
-      pos.y = Math.min(Math.max(pos.y, 0), maxY);
+      const sw=document.documentElement.clientWidth, sh=document.documentElement.clientHeight;
+      const bw=wrapBox.offsetWidth, bh=wrapBox.offsetHeight;
+      maxX=Math.max(0,sw-bw); maxY=Math.max(0,sh-bh);
+      pos.x=Math.min(Math.max(pos.x,0),maxX); pos.y=Math.min(Math.max(pos.y,0),maxY);
     }
-
     function stepBounce(dt){
-      if (paused) return;
-      pos.x += vel.x * dt; pos.y += vel.y * dt;
-      if (pos.x < 0)    { pos.x = -pos.x;         vel.x = -vel.x; }
-      if (pos.x > maxX) { pos.x = 2*maxX - pos.x; vel.x = -vel.x; }
-      if (pos.y < 0)    { pos.y = -pos.y;         vel.y = -vel.y; }
-      if (pos.y > maxY) { pos.y = 2*maxY - pos.y; vel.y = -vel.y; }
-      wrap.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+      if(paused) return;
+      pos.x+=vel.x*dt; pos.y+=vel.y*dt;
+      if(pos.x<0){pos.x=-pos.x; vel.x=-vel.x;}
+      if(pos.x>maxX){pos.x=2*maxX-pos.x; vel.x=-vel.x;}
+      if(pos.y<0){pos.y=-pos.y; vel.y=-vel.y;}
+      if(pos.y>maxY){pos.y=2*maxY-pos.y; vel.y=-vel.y;}
+      wrap.style.transform=`translate(${pos.x}px,${pos.y}px)`;
     }
 
-    // RAF
+    // ---------- paint ----------
+    function paint(){
+      let txt=render();
+      let lines=txt.split("\n").map((line,i)=>mutateLine(line, i%2?0.016:0.009));
+      rowShift(lines,0.01);
+      applyDisturb(lines);
+      pre.textContent=lines.join("\n");
+    }
+
+    // ---------- RAF loop ----------
+    let last=performance.now();
     function frame(now){
-      const dt = (now - last)/1000; last = now;
+      const dt=(now-last)/1000; last=now;
       drift(dt);
-      if (saver) stepBounce(dt);
+      if(saver) stepBounce(dt);
       paint();
       requestAnimationFrame(frame);
     }
-    requestAnimationFrame(frame);
+    paint(); requestAnimationFrame(frame);
 
-    // pointer ripple (works for touch too)
-    addEventListener("pointerdown", e => pointerDisturb(pre, e.clientX, e.clientY));
-    addEventListener("pointermove", e => { if (e.buttons) pointerDisturb(pre, e.clientX, e.clientY); });
+    // ---------- input ----------
+    addEventListener("pointerdown", e=>pointerDisturb(pre,e.clientX,e.clientY));
+    addEventListener("pointermove", e=>{ if(e.buttons) pointerDisturb(pre,e.clientX,e.clientY); });
 
-    // hotkeys (desktop-visible; harmless on mobile)
-    addEventListener("keydown", (e) => {
-      if (e.code === "Space") { if (saver){ paused = !paused; } e.preventDefault(); return; }
-      if (e.key === "s") {
-        saver = !saver; paused = false;
-        if (saver) {
-          wrap.hidden = false; center.hidden = true;
-          wrapBox.appendChild(pre);
-          requestAnimationFrame(() => {
+    addEventListener("keydown", e=>{
+      if(e.code==="Space"){ if(saver){ paused=!paused; } e.preventDefault(); return; }
+      if(e.key==="s"){
+        saver=!saver; paused=false;
+        if(saver){
+          wrap.hidden=false; center.hidden=true; wrapBox.appendChild(pre);
+          requestAnimationFrame(()=>{
             measureBounds();
-            pos.x = Math.random() * maxX;
-            pos.y = Math.random() * maxY;
-            vel.x = (Math.random()<.5?-1:1) * (100 + Math.random()*80);
-            vel.y = (Math.random()<.5?-1:1) * ( 80 + Math.random()*80);
-            wrap.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+            pos.x=Math.random()*maxX; pos.y=Math.random()*maxY;
+            vel.x=(Math.random()<.5?-1:1)*(100+Math.random()*80);
+            vel.y=(Math.random()<.5?-1:1)*( 80+Math.random()*80);
+            wrap.style.transform=`translate(${pos.x}px,${pos.y}px)`;
           });
-        } else {
-          wrap.hidden = true; center.hidden = false;
-          wrap.style.transform = "";
-          pos = {x:0,y:0};
-          centerBox.appendChild(pre);
+        }else{
+          wrap.hidden=true; center.hidden=false; wrap.style.transform="";
+          pos={x:0,y:0}; centerBox.appendChild(pre);
         }
         return;
       }
-      if (e.key === "r") { paletteIndex = (paletteIndex + 1) % PALETTES.length; return; }
-      if (e.key === "i") {
-        const root = document.documentElement;
-        const bg = getComputedStyle(root).getPropertyValue("--bg").trim();
-        const fg = getComputedStyle(root).getPropertyValue("--fg").trim();
-        root.style.setProperty("--bg", fg);
-        root.style.setProperty("--fg", bg);
-        return;
-      }
-      if (e.key === ".") { pre.classList.toggle("blink"); return; }
-      if (e.key === "f") {
-        document.fullscreenElement ? document.exitFullscreen()
-          : document.body.requestFullscreen().catch(()=>{});
-        return;
-      }
+      if(e.key==="r"){ paletteIndex=(paletteIndex+1)%PALETTES.length; return; }
+      if(e.key==="i"){ document.documentElement.classList.toggle('inv'); return; } /* <-- fixed invert */
+      if(e.key==="."){ pre.classList.toggle('blink'); return; }
+      if(e.key==="f"){ document.fullscreenElement?document.exitFullscreen():document.body.requestFullscreen().catch(()=>{}); return; }
     });
 
-    addEventListener("resize", () => { if (saver) measureBounds(); });
+    addEventListener("resize", ()=>{ if(saver) measureBounds(); });
   </script>
 </body>
 </html>
