@@ -7,7 +7,7 @@
   <title>RAYLUS — James Ray (UX Engineer)</title>
 
   <!-- SEO -->
-  <meta name="description" content="RAYLUS — portfolio/landing for James Ray (UX-focused engineer, design systems, accessibility, frontend leadership). Alpha 0.1.0."/>
+  <meta name="description" content="RAYLUS — portfolio/landing for James Ray (UX-focused engineer, design systems, accessibility, frontend leadership). Alpha 0.1.1."/>
   <meta name="keywords" content="James Ray, RAYLUS, UX Engineer, Frontend Engineer, Design Systems, Accessibility, TypeScript, Angular, React, Vue, NASA, JPL"/>
   <link rel="canonical" href="https://raylus.com/"/>
 
@@ -15,14 +15,14 @@
   <meta property="og:type" content="website"/>
   <meta property="og:site_name" content="RAYLUS"/>
   <meta property="og:title" content="RAYLUS — James Ray (UX Engineer)"/>
-  <meta property="og:description" content="UX-focused software engineer with a track record across NASA/JPL and AI platform work. Alpha 0.1.0."/>
+  <meta property="og:description" content="UX-focused software engineer with a track record across NASA/JPL and AI platform work. Alpha 0.1.1."/>
   <meta property="og:url" content="https://raylus.com/"/>
   <meta property="og:image" content="https://raylus.com/og.png"/>
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image"/>
   <meta name="twitter:title" content="RAYLUS — James Ray (UX Engineer)"/>
-  <meta name="twitter:description" content="UX-focused software engineer with a track record across NASA/JPL and AI platform work. Alpha 0.1.0."/>
+  <meta name="twitter:description" content="UX-focused software engineer with a track record across NASA/JPL and AI platform work. Alpha 0.1.1."/>
   <meta name="twitter:image" content="https://raylus.com/og.png"/>
 
   <!-- PWA-ish niceties -->
@@ -55,6 +55,7 @@
       --pad:20px; --mobile-pad:clamp(14px, 6vw, 28px);
       --accent: oklch(.92 .03 var(--hueA));
       --safe-top: env(safe-area-inset-top, 0px);
+      --iconSize: 38px; /* uniform circular icon buttons */
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -68,6 +69,7 @@
     .stage{ position:relative; width:100vw; height:100svh; isolation:isolate; padding:var(--pad); }
     .layer{position:absolute; inset:0; pointer-events:none}
 
+    /* subtle light-source bg */
     .lights::before{
       content:""; position:absolute; inset:-8%;
       background:
@@ -113,18 +115,19 @@
       .stage{ padding:var(--mobile-pad); }
       .center{
         justify-items:center; align-items:start;
-        padding-top: calc(var(--safe-top) + 56px);
+        padding-top: calc(var(--safe-top) + 64px); /* extra top space so glyph never hides under nav */
       }
     }
 
     .wrap{ position:absolute; left:0; top:0; will-change:transform }
     .box{ display:inline-block; pointer-events:auto }
 
+    /* ASCII glyph */
     pre.ascii{
       margin:0; white-space:pre; line-height:1.0;
       font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
       font-size: clamp(9px, 3.0vw, 21px);
-      letter-spacing:.02em; text-rendering:optimizeSpeed; cursor:pointer;
+      letter-spacing:.02em; text-rendering:optimizeSpeed; cursor:default; /* no click -> resume now handled by icon */
       filter: drop-shadow(0 0 .22rem rgba(0,0,0,.5)) drop-shadow(0 0 .1rem rgba(140,180,255,.1));
       color: var(--accent);
       transition: filter .15s ease, opacity .15s ease, transform .2s ease;
@@ -157,49 +160,62 @@
     .info{ position:absolute; top:10px; left:12px;
       font:12px/1.25 ui-monospace,Menlo,Consolas,monospace;
       color:#bcd; opacity:.55; background:rgba(0,0,0,.12);
-      padding:.35rem .5rem; border-radius:.4rem; backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
+      padding:.35rem .5rem; border-radius:9999px; backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
       display:none; pointer-events:none;
     }
     .info.on{ display:block }
 
+    /* top-right circular icon buttons */
     .nav{
       position:absolute; top:calc(10px + var(--safe-top)); right:12px; display:flex; gap:.6rem; z-index:10;
       filter: grayscale(0.8) contrast(1.05) brightness(.95);
     }
     .nav a{
+      width:var(--iconSize); height:var(--iconSize);
       font:16px/1 ui-monospace,monospace; color:#cfd7de; text-decoration:none;
-      padding:.35rem .45rem; border-radius:.5rem; background:rgba(0,0,0,.12);
+      border-radius:9999px; background:rgba(0,0,0,.12);
       display:inline-flex; align-items:center; justify-content:center;
       transition: filter .2s ease, transform .2s ease, background .2s ease, color .2s ease;
       border:1px solid rgba(255,255,255,.06);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
     }
+    .nav a span{ transform:translateY(1px) } /* better optical centering for glyphs */
     .nav a:hover{
       filter:none; transform:translateY(-1px);
       background:rgba(160,190,255,.08); color:#eaf0f4;
       box-shadow: 0 0 0.4rem rgba(140,180,255,.18);
     }
-    .nav a span{ filter:grayscale(.7); }
-    .nav a:hover span{ filter:none }
+    /* make ✉︎ visually equal height by slightly bumping font-size */
+    .nav a[title="Email James"] span{ font-size:18px; }
+
     @media (max-width: 768px), (hover:none), (pointer:coarse){
-      .nav a{ font-size:15px; padding:.35rem .44rem }
+      .nav a{ width:36px; height:36px; }
     }
 
+    /* resume view (hidden by default) */
     .resume{
       position:absolute; inset:0; display:none; overflow:auto; padding:clamp(16px,4vw,40px);
       color:#e7ecef; backdrop-filter:saturate(1.1) blur(0px);
-      display:grid; grid-template-columns: 1fr minmax(280px,1000px) 1fr; column-gap: clamp(16px, 3vw, 28px);
+      display:none; /* important: not visible by default */
+      grid-template-columns: minmax(0,1fr) minmax(280px,1000px) minmax(0,1fr);
+      column-gap: clamp(16px, 3vw, 28px);
       align-items:start;
     }
-    .resume.on{ display:grid }
+    .resume.on{ display:grid; }
 
-    .back-floating{ display:none; }
+    /* small, sleek floating back just to the left of the card */
+    .back-floating{
+      display:none;
+    }
     @media (min-width: 1024px){
       .back-floating{
-        grid-column: 1 / 2; align-self:start; position:sticky; top:clamp(16px,4vw,40px);
-        display:inline-flex; gap:.35rem; align-items:center;
+        grid-column: 1 / 2; align-self:start; justify-self:end;
+        position:sticky; top:clamp(16px,4vw,40px);
+        width:max-content; /* no full-width stretch */
         text-decoration:none; color:#cfe3ff; font:12px ui-monospace,monospace;
         background:rgba(120,160,255,.1); border:1px solid rgba(140,180,255,.25);
-        padding:.32rem .5rem; border-radius:.45rem;
+        padding:.34rem .58rem; border-radius:9999px;
+        display:inline-flex; gap:.35rem; align-items:center
       }
       .back-floating:hover{ background:rgba(140,180,255,.16) }
     }
@@ -208,7 +224,8 @@
       grid-column: 2 / 3;
       max-width:1000px; margin:0 auto; background:rgba(0,0,0,.22);
       border:1px solid rgba(255,255,255,.06); border-radius:16px;
-      padding:clamp(16px,2.4vw,28px); box-shadow:0 10px 40px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.04);
+      padding:clamp(16px,2.4vw,28px);
+      box-shadow:0 10px 40px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.04);
     }
     .resume h1{ margin:0 0 .25rem; font:600 clamp(22px,3.8vw,34px)/1.1 ui-sans-serif,system-ui; letter-spacing:.02em }
     .resume .sub{ color:#aab7bf; margin-bottom:1rem; font-size:clamp(13px,1.8vw,14px) }
@@ -216,14 +233,16 @@
     .resume ul{ margin:.2rem 0 0 1.1rem; padding:0 }
     .resume li{ margin:.2rem 0; }
     .resume .pill{
-      display:inline-block; margin:.18rem .25rem 0 0; padding:.22rem .5rem; border-radius:999px;
+      display:inline-block; margin:.18rem .25rem 0 0; padding:.28rem .62rem; /* more padding */
+      border-radius:9999px;
       background:rgba(200,220,255,.08); border:1px solid rgba(200,220,255,.16); color:#dfe8ff; font-size:12px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
     }
     .resume .row{ display:flex; gap:1.2rem; flex-wrap:wrap }
     .resume .muted{ color:#9fb0ba }
     .resume .back-inline{
       position:sticky; top:0; margin:-.6rem 0 .4rem; text-decoration:none; color:#cfe3ff; font:12px ui-monospace,monospace;
-      background:rgba(120,160,255,.1); border:1px solid rgba(140,180,255,.25); padding:.32rem .5rem; border-radius:.45rem;
+      background:rgba(120,160,255,.1); border:1px solid rgba(140,180,255,.25); padding:.32rem .5rem; border-radius:9999px;
       display:inline-flex; gap:.35rem; align-items:center
     }
     .resume .back-inline:hover{ background:rgba(140,180,255,.16) }
@@ -232,17 +251,26 @@
 </head>
 <body>
   <div class="stage" id="stage">
+    <!-- background layers -->
     <div class="layer lights"></div>
     <div class="layer grid"></div>
     <div class="layer scan"></div>
     <div class="sweep" aria-hidden="true"></div>
 
+    <!-- top-right circular glyphy icons -->
     <nav class="nav" aria-label="external links">
-      <a href="https://www.linkedin.com/in/james-engineer" target="_blank" rel="noopener" title="LinkedIn"><span>in</span></a>
-      <a href="mailto:hello@raylus.com" title="Email James"><span>✉︎</span></a>
-      <a href="#/resume" title="Resume"><span>📄</span></a>
+      <a href="https://www.linkedin.com/in/james-engineer" target="_blank" rel="noopener" title="LinkedIn">
+        <span>in</span>
+      </a>
+      <a href="mailto:hello@raylus.com" title="Email James">
+        <span>✉︎</span>
+      </a>
+      <a href="#/resume" title="Resume">
+        <span>📄</span>
+      </a>
     </nav>
 
+    <!-- main landing -->
     <div class="center" id="center"><div class="box" id="centerBox"></div></div>
     <div class="wrap" id="wrap" hidden><div class="box" id="wrapBox"></div></div>
     <div class="noise" aria-hidden="true"></div>
@@ -254,6 +282,7 @@
     <div class="meta" id="meta"></div>
     <div class="info" id="info"></div>
 
+    <!-- resume pane -->
     <section id="resume" class="resume" aria-label="Resume">
       <a href="#/" class="back-floating" aria-label="Back to landing">← BACK</a>
       <div class="card">
@@ -344,15 +373,18 @@
   </noscript>
 
   <script>
-    const VERSION = "alpha 0.1.0";
+    // ---------- version/meta ----------
+    const VERSION = "alpha 0.1.1";
     const COPYRIGHT = "© James Ray 2025";
     document.getElementById("meta").textContent =
       `${VERSION} — full site coming soon — ${COPYRIGHT}`;
 
+    // ---------- utils ----------
     const pick = a => a[(Math.random()*a.length)|0];
     const clamp = (v,a,b)=>Math.min(b,Math.max(a,v));
     const saveBlob = (blob, name) => { const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href), 1500); };
 
+    // ---------- glyphs ----------
     const GLYPHS={ R:["████ ","█   █","█   █","████ ","█ █  ","█  █ ","█   █"],
       A:[" ███ ","█   █","█   █","█████","█   █","█   █","█   █"],
       Y:["█   █"," █ █ ","  █  ","  █  ","  █  ","  █  ","  █  "],
@@ -375,6 +407,7 @@
       return rows;
     }
 
+    // ---------- glitch & disturb ----------
     const GLITCH=["█","▓","▒","■","⣿","#","@",":","+","="];
     function mutateLine(line,chance){ return line.replace(/[^\s]/g,c=>Math.random()<chance?pick(GLITCH):c); }
     function rowShift(lines,rate=0.002){ for(let i=0;i<lines.length;i++){ if(Math.random()<rate){ const row=lines[i]; const k=(Math.random()<.5?-1:1)*((Math.random()*2)|0); if(k>0) lines[i]=row.slice(k)+row.slice(0,k); else if(k<0){ const kk=-k; lines[i]=row.slice(-kk)+row.slice(0,-kk); } } } }
@@ -402,33 +435,30 @@
         if(xx*xx+yy*yy<=R*R) disturb.set(`${gx+xx},${gy+yy}`, 5+((R-Math.hypot(xx,yy))|0));
     }
 
+    // ---------- DOM wiring ----------
     const pre=document.createElement('pre');
     pre.className='ascii';
-    pre.setAttribute('aria-label','ASCII art (click to open resume)');
-    pre.setAttribute('role','link');
+    pre.setAttribute('aria-label','ASCII art');
     pre.setAttribute('tabindex','0');
 
     const center=document.getElementById('center'), centerBox=document.getElementById('centerBox');
     const wrap=document.getElementById('wrap'), wrapBox=document.getElementById('wrapBox');
     centerBox.appendChild(pre);
 
-    pre.addEventListener('click', ()=> { location.hash = '#/resume'; });
-    pre.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); location.hash = '#/resume'; }
-    });
+    // disturb only; no click-to-resume (resume opens via top-right 📄)
     pre.addEventListener("pointerdown", e=>pointerDisturb(pre,e.clientX,e.clientY));
     pre.addEventListener("pointermove", e=>{ if(e.buttons) pointerDisturb(pre,e.clientX,e.clientY); });
     let isHovering=false, hoverEase=0;
     pre.addEventListener('mouseenter', ()=>{ isHovering=true; pre.classList.add('hovered'); });
     pre.addEventListener('mouseleave', ()=>{ isHovering=false; pre.classList.remove('hovered'); });
 
+    // ---------- visuals ----------
     let tAccum=0;
     function lineOpacity(i){
       const base=0.86 + 0.05*Math.sin(tAccum*0.7 + i*0.78);
       const jitter=0.006*(Math.sin(tAccum*2.7 + i*1.9));
       return Math.min(0.93, Math.max(0.82, base+jitter));
     }
-
     let hueA=230,hueB=280;
     function drift(dt){
       hueA=(hueA+5*dt)%360; hueB=(hueB+8*dt)%360;
@@ -437,6 +467,7 @@
       root.style.setProperty('--hueB',hueB.toFixed(2));
     }
 
+    // ---------- screensaver physics ----------
     let saver=false, paused=false;
     let pos={x:0,y:0}, vel={x:110,y:92}, maxX=0,maxY=0;
 
@@ -456,6 +487,7 @@
       wrap.style.transform=`translate(${pos.x}px,${pos.y}px)`;
     }
 
+    // ---------- font scale ----------
     let fontScaleNudge = 0;
     function setFontScale(){
       const base = window.matchMedia("(hover:none),(pointer:coarse)").matches
@@ -487,6 +519,7 @@
       }).join("\n");
     }
 
+    // ---------- info + fps ----------
     const infoEl = document.getElementById('info');
     let showInfo = false; let lastFpsT = performance.now(), frames=0, fps=0;
     function tickFps(now){ frames++; if(now - lastFpsT >= 1000){ fps = Math.round((frames*1000)/(now-lastFpsT)); frames=0; lastFpsT = now; } }
@@ -497,6 +530,7 @@
       infoEl.textContent = `fps ${fps} · pal ${pal} · ${VERSION}`;
     }
 
+    // ---------- RAF loop ----------
     let last=performance.now(); let loopPaused=false;
     function frame(now){
       if(loopPaused) { requestAnimationFrame(frame); return; }
@@ -511,6 +545,7 @@
     }
     paint(); requestAnimationFrame(frame);
 
+    // ---------- input ----------
     addEventListener("keydown", e=>{
       if(currentRoute()==="resume" && e.key==="Escape"){ location.hash="#/"; return; }
       if(e.code==="Space"){ if(saver){ paused=!paused; } e.preventDefault(); return; }
@@ -557,6 +592,7 @@
       }
     });
 
+    // ---------- tiny router (#/ or #/resume) ----------
     const resumeEl = document.getElementById('resume');
     function currentRoute(){ return location.hash.replace(/^#\/?/, '') || ''; }
     function applyRoute(){
@@ -575,16 +611,17 @@
       }
     }
     addEventListener('hashchange', applyRoute);
-    applyRoute();
+    applyRoute(); // default is landing (resume hidden)
+
+    // click outside card returns
     resumeEl.addEventListener('click', (e)=>{ if(e.target === resumeEl) location.hash="#/"; });
 
-    // initial paint
+    // first paint (reduces CLS)
     (function firstPaint(){
       const rows = build();
-      pre.textContent = rows.join("\n"); // quick first content for CLS
+      pre.textContent = rows.join("\n");
     })();
   </script>
 </body>
 </html>
-<!-- alpha 0.1.0 -->
-
+<!-- alpha 0.1.1 -->
