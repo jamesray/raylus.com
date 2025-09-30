@@ -1,94 +1,161 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>raylus</title>
-  <meta name="robots" content="noindex,nofollow" />
-  <meta name="description" content="…" />
-  <meta property="og:title" content="raylus" />
-  <meta property="og:description" content="…" />
-  <meta property="og:type" content="website" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>RAYLUS</title>
+  <meta name="description" content="raylus — ascii."/>
+  <meta name="robots" content="index,follow"/>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32'/%3E%3C/svg%3E">
   <style>
-    /* minimal, elusive */
     :root {
-      --bg: #0b0c10;
+      --bg: #0a0b0f;
       --fg: #e7e9ec;
-      --muted: #9aa0a6;
-      --ring: #1b1f24;
+      --dim: #9aa0a6;
       --accent: #9bbcff;
+      --ring: #1b1f24;
     }
     @media (prefers-color-scheme: light) {
-      :root { --bg:#fafafa; --fg:#111; --muted:#656b72; --ring:#e8eaed; --accent:#1a73e8; }
+      :root { --bg:#fafafa; --fg:#111; --dim:#555; --accent:#1a73e8; --ring:#e8eaed; }
     }
     * { box-sizing: border-box; }
     html, body { height: 100%; }
     body {
       margin: 0;
       background:
-        radial-gradient(1200px 600px at 80% -10%, color-mix(in oklab, var(--accent) 12%, transparent), transparent),
-        radial-gradient(900px 400px at -10% 110%, color-mix(in oklab, var(--accent) 10%, transparent), transparent),
+        radial-gradient(1400px 700px at 80% -10%, color-mix(in oklab, var(--accent) 12%, transparent), transparent),
+        radial-gradient(1100px 600px at -10% 110%, color-mix(in oklab, var(--accent) 10%, transparent), transparent),
         var(--bg);
       color: var(--fg);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
       font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif;
-      display: grid; place-items: center;
-      padding: 24px;
     }
-    main {
-      width: min(720px, 100%);
-      border: 1px solid var(--ring);
-      background: color-mix(in oklab, var(--bg) 92%, transparent);
-      border-radius: 20px;
-      padding: clamp(18px, 4vw, 28px);
-      text-align: center;
-      backdrop-filter: blur(6px);
+    .stage {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      padding: clamp(12px, 4vw, 48px);
+      isolation: isolate;
     }
-    h1 {
-      margin: 0 0 6px;
-      font-size: clamp(28px, 5vw, 42px);
-      font-weight: 800;
-      letter-spacing: -0.02em;
-    }
-    p {
+    pre#art {
       margin: 0;
-      color: var(--muted);
-      font-size: 14px;
+      white-space: pre;
+      line-height: 1.0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: clamp(10px, 3vw, 24px);
+      letter-spacing: .02em;
+      filter: drop-shadow(0 0 0.35rem rgba(0,0,0,.6));
+      user-select: none;
+      text-rendering: optimizeSpeed;
     }
-    .dot {
-      display: inline-block;
-      width: .5em; height: .5em;
-      border-radius: 999px;
-      background: currentColor;
+    .stage::before {
+      content: "";
+      position: absolute; inset: 0;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,.03), rgba(255,255,255,.03) 1px, transparent 1px, transparent 3px),
+        radial-gradient(300px 120px at 50% -30px, rgba(255,255,255,.06), transparent);
+      mix-blend-mode: overlay;
+      pointer-events: none;
+      opacity: .22;
+    }
+    .noise {
+      position: absolute; inset: -25vmax;
+      background:
+        repeating-conic-gradient(from 0deg, rgba(255,255,255,.02) 0 .25deg, transparent .25deg .5deg);
+      animation: noise 1.6s steps(8) infinite;
+      mix-blend-mode: soft-light;
+      pointer-events: none;
+      opacity: .55;
+    }
+    @keyframes noise { to { transform: translate3d(1.5%, -1%, 0); } }
+    .hud {
+      position: absolute; bottom: 16px; inset-inline: 0;
+      text-align: center; font-size: 12px; color: var(--dim);
       opacity: .8;
-      animation: pulse 2.4s ease-in-out infinite;
-      vertical-align: middle;
-      margin-left: .25em;
     }
-    @keyframes pulse {
-      0%, 100% { opacity: .2; transform: scale(1); }
-      50% { opacity: .9; transform: scale(1.25); }
+    .blink { animation: blink 2.4s ease-in-out infinite; }
+    @keyframes blink {
+      0%, 96%, 100% { opacity: 1 }
+      97% { opacity: .55 }
+      98% { opacity: .18 }
+      99% { opacity: .92 }
     }
-    nav {
-      margin-top: 14px;
-      display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
-    }
-    a.min {
-      color: var(--muted); text-decoration: none; border: 1px dashed var(--ring);
-      padding: 8px 10px; border-radius: 999px; font-size: 12px;
-    }
-    a.min:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   </style>
 </head>
 <body>
-  <main>
-    <h1>raylus<span class="dot" aria-hidden="true"></span></h1>
-    <p>…coming soon</p>
-    <!-- optional tiny links; remove if you want it even more elusive -->
-    <nav aria-label="minimal links">
-      <a class="min" href="mailto:hello@raylus.com">contact</a>
-      <a class="min" href="/" rel="nofollow">/</a>
-    </nav>
-  </main>
+  <div class="stage">
+    <pre id="art" aria-label="RAYLUS ascii art"></pre>
+    <div class="noise" aria-hidden="true"></div>
+    <div class="hud">hotkeys: <kbd>r</kbd> palette • <kbd>i</kbd> invert • <kbd>.</kbd> blink • <kbd>f</kbd> fullscreen</div>
+  </div>
+
+  <script type="module">
+    const GLYPHS = {
+      R: ["████ ","█   █","█   █","████ ","█ █  ","█  █ ","█   █"],
+      A: [" ███ ","█   █","█   █","█████","█   █","█   █","█   █"],
+      Y: ["█   █"," █ █ ","  █  ","  █  ","  █  ","  █  ","  █  "],
+      L: ["█    ","█    ","█    ","█    ","█    ","█    ","█████"],
+      U: ["█   █","█   █","█   █","█   █","█   █","█   █"," ███ "],
+      S: [" ███ ","█   █","█    "," ███ ","    █","█   █"," ███ "],
+      " ": ["     ","     ","     ","     ","     ","     ","     "],
+    };
+    const BASE_PALETTES = [
+      { on: "█", off: " " },
+      { on: "▓", off: " " },
+      { on: "▒", off: " " },
+      { on: "■", off: "·" },
+      { on: "#", off: "." },
+      { on: "@", off: " " },
+      { on: "⣿", off: " " },
+    ];
+    let paletteIndex = 0;
+    const WORD = "RAYLUS";
+    const ROWS = 7;
+
+    function renderWord(word, on = BASE_PALETTES[paletteIndex].on, off = BASE_PALETTES[paletteIndex].off) {
+      const rows = Array.from({ length: ROWS }, () => "");
+      for (const ch of word) {
+        const g = GLYPHS[ch] ?? GLYPHS[" "];
+        for (let r = 0; r < ROWS; r++) {
+          rows[r] += g[r].replaceAll("█", on).replaceAll(" ", off) + "  ";
+        }
+      }
+      return rows.join("\n");
+    }
+
+    const art = document.getElementById("art");
+    art.textContent = renderWord(WORD);
+
+    const glyphCycle = ["█","▓","▒","■","⣿","#","@"];
+    function mutateLine(line, chance = 0.02) {
+      return line.replace(/[^\s]/g, c => Math.random() < chance ? glyphCycle[(Math.random()*glyphCycle.length)|0] : c);
+    }
+
+    addEventListener("keydown", (e) => {
+      if (e.key === "r") { paletteIndex = (paletteIndex + 1) % BASE_PALETTES.length; }
+      if (e.key === "i") {
+        const root = document.documentElement;
+        const cs = getComputedStyle(root);
+        const bg = cs.getPropertyValue("--bg").trim();
+        const fg = cs.getPropertyValue("--fg").trim();
+        root.style.setProperty("--bg", fg);
+        root.style.setProperty("--fg", bg);
+      }
+      if (e.key === ".") { art.classList.toggle("blink"); }
+      if (e.key === "f") { document.fullscreenElement ? document.exitFullscreen() : document.body.requestFullscreen().catch(()=>{}); }
+    });
+
+    function tick() {
+      let txt = renderWord(WORD);
+      txt = txt.split("\n").map((line,i) => mutateLine(line, i%2?0.015:0.008)).join("\n");
+      art.textContent = txt;
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  </script>
 </body>
 </html>
