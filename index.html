@@ -619,6 +619,23 @@
       pre.textContent = rows.join("\n");
     })();
   </script>
+  <audio id="bg-audio" autoplay loop preload="auto">
+    <source src="audio/bg-music.opus" type="audio/ogg; codecs=opus">
+    <!-- fallback -->
+    Your browser does not support the audio element.
+  </audio>
+  <script>
+    const audio = document.getElementById("bg-audio");
+    // start muted, let user unmute with a keypress or click (autoplay policies!)
+    audio.muted = true;
+
+    document.addEventListener("click", () => {
+      if (audio.muted) {
+        audio.muted = false;
+        audio.play().catch(()=>{});
+      }
+    }, { once: true });
+  </script>
 </body>
 </html>
 <!-- alpha 0.1.2 -->
