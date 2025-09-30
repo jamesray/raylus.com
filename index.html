@@ -4,10 +4,46 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="color-scheme" content="dark"/>
-  <title>RAYLUS</title>
-  <meta name="description" content="pre-alpha v0.0.24"/>
+  <title>RAYLUS — James Ray (UX Engineer)</title>
+
+  <!-- SEO -->
+  <meta name="description" content="RAYLUS — portfolio/landing for James Ray (UX-focused engineer, design systems, accessibility, frontend leadership). Alpha 0.1.0."/>
+  <meta name="keywords" content="James Ray, RAYLUS, UX Engineer, Frontend Engineer, Design Systems, Accessibility, TypeScript, Angular, React, Vue, NASA, JPL"/>
+  <link rel="canonical" href="https://raylus.com/"/>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="RAYLUS"/>
+  <meta property="og:title" content="RAYLUS — James Ray (UX Engineer)"/>
+  <meta property="og:description" content="UX-focused software engineer with a track record across NASA/JPL and AI platform work. Alpha 0.1.0."/>
+  <meta property="og:url" content="https://raylus.com/"/>
+  <meta property="og:image" content="https://raylus.com/og.png"/>
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="RAYLUS — James Ray (UX Engineer)"/>
+  <meta name="twitter:description" content="UX-focused software engineer with a track record across NASA/JPL and AI platform work. Alpha 0.1.0."/>
+  <meta name="twitter:image" content="https://raylus.com/og.png"/>
+
+  <!-- PWA-ish niceties -->
+  <meta name="theme-color" content="#05070a"/>
   <meta name="robots" content="index,follow"/>
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Person",
+    "name":"James Ray",
+    "jobTitle":"UX Engineer",
+    "email":"mailto:hello@raylus.com",
+    "sameAs":["https://www.linkedin.com/in/james-engineer"],
+    "url":"https://raylus.com/"
+  }
+  </script>
+
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32'/%3E%3C/svg%3E">
+
   <style>
     :root{
       --bg:#05070a; --fg:#e7ecef;
@@ -15,6 +51,7 @@
       --grid-alpha:.024; --grid-size:22px;
       --pad:20px; --mobile-pad:clamp(14px, 6vw, 28px);
       --accent: oklch(.92 .03 var(--hueA));
+      --safe-top: env(safe-area-inset-top, 0px);
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -70,10 +107,17 @@
     @media (prefers-reduced-motion: reduce){ .sweep{ animation:none } }
 
     /* center containers */
-    .center{ position:absolute; inset:0; display:grid; place-items:center; pointer-events:auto; }
+    .center{
+      position:absolute; inset:0; display:grid; place-items:center; pointer-events:auto;
+      /* On mobile, push down so nav never overlaps the glyph */
+      padding-top:0;
+    }
     @media (max-width: 768px), (hover:none), (pointer:coarse){
       .stage{ padding:var(--mobile-pad); }
-      .center{ justify-items:center; align-items:start; }
+      .center{
+        justify-items:center; align-items:start;
+        padding-top: calc(var(--safe-top) + 56px); /* room for nav */
+      }
     }
 
     .wrap{ position:absolute; left:0; top:0; will-change:transform }
@@ -124,7 +168,7 @@
 
     /* top-right glyphy icons */
     .nav{
-      position:absolute; top:10px; right:12px; display:flex; gap:.6rem; z-index:10;
+      position:absolute; top:calc(10px + var(--safe-top)); right:12px; display:flex; gap:.6rem; z-index:10;
       filter: grayscale(0.8) contrast(1.05) brightness(.95);
     }
     .nav a{
@@ -141,7 +185,6 @@
     }
     .nav a span{ filter:grayscale(.7); }
     .nav a:hover span{ filter:none }
-
     @media (max-width: 768px), (hover:none), (pointer:coarse){
       .nav a{ font-size:15px; padding:.35rem .44rem }
     }
@@ -150,9 +193,29 @@
     .resume{
       position:absolute; inset:0; display:none; overflow:auto; padding:clamp(16px,4vw,40px);
       color:#e7ecef; backdrop-filter:saturate(1.1) blur(0px);
+      /* layout track for floating back button */
+      display:grid; grid-template-columns: 1fr minmax(280px,1000px) 1fr; column-gap: clamp(16px, 3vw, 28px);
+      align-items:start;
     }
-    .resume.on{ display:block }
+    .resume.on{ display:grid }
+
+    /* floating back button at left of card (large screens) */
+    .back-floating{
+      display:none;
+    }
+    @media (min-width: 1024px){
+      .back-floating{
+        grid-column: 1 / 2; align-self:start; position:sticky; top:clamp(16px,4vw,40px);
+        display:inline-flex; gap:.35rem; align-items:center;
+        text-decoration:none; color:#cfe3ff; font:12px ui-monospace,monospace;
+        background:rgba(120,160,255,.1); border:1px solid rgba(140,180,255,.25);
+        padding:.32rem .5rem; border-radius:.45rem;
+      }
+      .back-floating:hover{ background:rgba(140,180,255,.16) }
+    }
+
     .resume .card{
+      grid-column: 2 / 3;
       max-width:1000px; margin:0 auto; background:rgba(0,0,0,.22);
       border:1px solid rgba(255,255,255,.06); border-radius:16px;
       padding:clamp(16px,2.4vw,28px); box-shadow:0 10px 40px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.04);
@@ -168,11 +231,17 @@
     }
     .resume .row{ display:flex; gap:1.2rem; flex-wrap:wrap }
     .resume .muted{ color:#9fb0ba }
-    .resume .back{ position:sticky; top:0; margin:-.6rem 0 .4rem; text-decoration:none; color:#cfe3ff; font:12px ui-monospace,monospace;
+
+    /* inline back (inside card) for small screens */
+    .resume .back-inline{
+      position:sticky; top:0; margin:-.6rem 0 .4rem; text-decoration:none; color:#cfe3ff; font:12px ui-monospace,monospace;
       background:rgba(120,160,255,.1); border:1px solid rgba(140,180,255,.25); padding:.32rem .5rem; border-radius:.45rem;
       display:inline-flex; gap:.35rem; align-items:center
     }
-    .resume .back:hover{ background:rgba(140,180,255,.16) }
+    .resume .back-inline:hover{ background:rgba(140,180,255,.16) }
+    @media (min-width:1024px){
+      .resume .back-inline{ display:none; }
+    }
   </style>
 </head>
 <body>
@@ -200,6 +269,7 @@
     <div class="center" id="center"><div class="box" id="centerBox"></div></div>
     <div class="wrap" id="wrap" hidden><div class="box" id="wrapBox"></div></div>
     <div class="noise" aria-hidden="true"></div>
+
     <div class="hud">
       keys: <kbd>r</kbd> palette • <kbd>↑/↓</kbd> size • <kbd>f</kbd> fullscreen •
       <kbd>s</kbd> screensaver • <kbd>space</kbd> pause • <kbd>i</kbd> info • <kbd>t</kbd>/<kbd>P</kbd> export
@@ -207,14 +277,19 @@
     <div class="meta" id="meta"></div>
     <div class="info" id="info"></div>
 
-    <!-- resume page (UX-lean, pulled from your resume) -->
+    <!-- resume page -->
     <section id="resume" class="resume" aria-label="Resume">
+      <!-- floating back (left of card on large screens) -->
+      <a href="#/" class="back-floating" aria-label="Back to landing">← BACK</a>
+
       <div class="card">
-        <a href="#/" class="back">← BACK</a>
+        <!-- inline back for small screens -->
+        <a href="#/" class="back-inline">← BACK</a>
+
         <h1>James Ray</h1>
         <div class="sub">
           UX Engineer · Senior Technical Lead & Software Engineer — Altadena, CA ·
-          <a href="mailto:jamesarthurray@gmail.com">jamesarthurray@gmail.com</a>
+          <a href="mailto:hello@raylus.com">hello@raylus.com</a>
         </div>
 
         <h2>Professional Summary</h2>
@@ -298,7 +373,7 @@
 
         <h2>Contact</h2>
         <p class="muted">
-          Email: <a href="mailto:jamesarthurray@gmail.com">jamesarthurray@gmail.com</a>
+          Email: <a href="mailto:hello@raylus.com">hello@raylus.com</a>
         </p>
       </div>
     </section>
@@ -306,7 +381,7 @@
 
   <script>
     // ---------- version/meta ----------
-    const VERSION = "pre-alpha v0.0.24";
+    const VERSION = "alpha 0.1.0";
     const COPYRIGHT = "© James Ray 2025";
     document.getElementById("meta").textContent =
       `${VERSION} — full site coming soon — ${COPYRIGHT}`;
@@ -554,16 +629,15 @@
     function applyRoute(){
       const r = currentRoute();
       if(r === 'resume'){
-        // Fully hide glyph while viewing resume
+        // hide glyph while viewing resume
         pre.style.display = 'none';
         pre.setAttribute('aria-hidden','true');
-        // pause landing animation
         loopPaused = true;
         saver=false; paused=false;
         wrap.hidden=true; center.hidden=false; centerBox.appendChild(pre);
         resumeEl.classList.add('on');
       }else{
-        // Restore glyph
+        // restore glyph
         pre.style.display = '';
         pre.removeAttribute('aria-hidden');
         resumeEl.classList.remove('on');
@@ -578,5 +652,4 @@
   </script>
 </body>
 </html>
-<!-- pre-alpha v0.0.24 -->
- 
+<!-- alpha 0.1.0 -->
