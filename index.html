@@ -15,7 +15,6 @@
       --ring: #0f1318;
       --hueA: 230;
       --hueB: 280;
-      /* terminal grid intensity */
       --grid-alpha: .04;
     }
     @media (prefers-color-scheme: light) {
@@ -30,38 +29,22 @@
       font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif;
       user-select: none;
       overflow: hidden;
-      /* FUTURISTIC TERMINAL BACKDROP:
-         - off-axis light source (radial) from top-left
-         - subtle vignette
-         - ultra-faint grid underlay
-      */
-      background:
-        /* scan glow source */
+      /* futuristic terminal backdrop */
+      background-image:
+        /* grid (y, x) */
+        linear-gradient(rgba(255,255,255,var(--grid-alpha)) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,var(--grid-alpha)) 1px, transparent 1px),
+        /* light source */
         radial-gradient(900px 600px at 12% 8%,
           color-mix(in oklab, oklch(.98 .05 255) 12%, transparent) 0%,
           color-mix(in oklab, oklch(.95 .04 235) 8%, transparent) 40%,
           transparent 70%),
         /* vignette */
         radial-gradient(1200px 700px at 50% 50%,
-          transparent 40%,
-          rgba(0,0,0,.25) 100%),
+          transparent 40%, rgba(0,0,0,.25) 100%),
         var(--bg);
-      /* faint terminal grid (both axes) */
-      background-image:
-        linear-gradient(rgba(255,255,255,var(--grid-alpha)) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,var(--grid-alpha)) 1px, transparent 1px),
-        radial-gradient(900px 600px at 12% 8%,
-          color-mix(in oklab, oklch(.98 .05 255) 12%, transparent) 0%,
-          color-mix(in oklab, oklch(.95 .04 235) 8%, transparent) 40%,
-          transparent 70%),
-        radial-gradient(1200px 700px at 50% 50%,
-          transparent 40%,
-          rgba(0,0,0,.25) 100%),
-        var(--bg);
-      background-size:
-        24px 24px, 24px 24px, auto, auto, auto;
-      background-blend-mode:
-        overlay, overlay, normal, normal, normal;
+      background-size: 24px 24px, 24px 24px, auto, auto, auto;
+      background-blend-mode: overlay, overlay, normal, normal, normal;
       display: grid;
       place-items: center;
     }
@@ -71,7 +54,6 @@
       width: 100%;
       height: 100%;
       isolation: isolate;
-      /* scanlines overlay */
     }
     .stage::before {
       content: "";
@@ -84,7 +66,7 @@
       opacity: .22;
     }
 
-    /* when screensaver OFF, we use this centered wrapper */
+    /* centered mode */
     .center {
       display: grid;
       place-items: center;
@@ -93,20 +75,15 @@
       pointer-events: none;
     }
 
-    /* when screensaver ON, we use this absolutely-positioned bouncer */
+    /* screensaver: the wrapper is what moves; no display:contents */
     .wrap {
       position: absolute;
       left: 0; top: 0;
       will-change: transform;
-      display: contents; /* so pre sizes dictate wrap bbox via inner box */
     }
-    .box {
-      /* gives wrap a measurable size */
-      display: inline-block;
-      pointer-events: auto;
-    }
+    .box { display: inline-block; pointer-events: auto; }
 
-    pre#art {
+    pre.ascii {
       margin: 0;
       white-space: pre;
       line-height: 1.0;
@@ -118,7 +95,6 @@
       color: oklch(0.92 0.03 var(--hueA));
     }
 
-    /* animated grain */
     .noise {
       position: absolute; inset: -25vmax;
       background:
@@ -131,28 +107,28 @@
     .hud {
       position: absolute; bottom: 16px; inset-inline: 0;
       text-align: center; font-size: 12px; color: oklch(0.78 0.04 var(--hueB));
-      opacity: .8;
+      opacity: .85;
     }
-
     .blink { animation: b 2.4s ease-in-out infinite; }
     @keyframes b { 0%,96%,100%{opacity:1} 97%{opacity:.55} 98%{opacity:.18} 99%{opacity:.92} }
   </style>
 </head>
 <body>
   <div class="stage">
-    <!-- centered container (used when screensaver is OFF) -->
+    <!-- centered (default) -->
     <div class="center" id="center">
-      <div class="box"><pre id="art" aria-label="ASCII art"></pre></div>
+      <div class="box"><pre id="art" class="ascii" aria-label="ASCII art"></pre></div>
     </div>
 
-    <!-- bouncing container (used when screensaver is ON) -->
+    <!-- screensaver (bouncing) -->
     <div class="wrap" id="wrap" hidden>
-      <div class="box"><pre id="art2" aria-label="ASCII art (bounce)"></pre></div>
+      <div class="box"><pre id="art2" class="ascii" aria-label="ASCII art (bounce)"></pre></div>
     </div>
 
     <div class="noise" aria-hidden="true"></div>
     <div class="hud">
-      keys: <kbd>r</kbd> palette • <kbd>i</kbd> invert • <kbd>.</kbd> blink • <kbd>f</kbd> fullscreen • <kbd>s</kbd> screensaver
+      keys: <kbd>r</kbd> palette • <kbd>i</kbd> invert • <kbd>.</kbd> blink • <kbd>f</kbd> fullscreen •
+      <kbd>s</kbd> screensaver • <kbd>space</kbd> pause/resume
     </div>
   </div>
 
@@ -170,8 +146,8 @@
       S:[" ███ ","█   █","█    "," ███ ","    █","█   █"," ███ "],
       " ":[ "     ","     ","     ","     ","     ","     ","     "]
     };
-    const ROWS = 7;
     const WORD = "RAYLUS";
+    const ROWS = 7;
 
     const PALETTES = [
       { on:"█", off:" " }, { on:"▓", off:" " }, { on:"▒", off:" " },
@@ -248,11 +224,12 @@
       root.style.setProperty("--hueB", hueB.toFixed(2));
     }
 
-    // screensaver toggle (OFF by default)
+    // screensaver (OFF by default)
     let saver = false;
+    let paused = false; // spacebar toggles this
     let last = performance.now();
 
-    // bounce physics for wrap/box
+    // precise bounce
     let pos = { x: 0, y: 0 }, vel = { x: 140, y: 110 };
     let maxX = 0, maxY = 0;
 
@@ -268,6 +245,7 @@
     }
 
     function stepBounce(dt){
+      if (paused) return; // pause motion but keep repaint/glitches
       pos.x += vel.x * dt; pos.y += vel.y * dt;
       if (pos.x < 0)    { pos.x = -pos.x;         vel.x = -vel.x; }
       if (pos.x > maxX) { pos.x = 2*maxX - pos.x; vel.x = -vel.x; }
@@ -287,25 +265,28 @@
       } else {
         paintInto(art);
       }
-
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
 
-    // input
+    // pointer ripple
     addEventListener("pointermove", e => {
       if (e.buttons){
-        saver ? pointerDisturb(art2, e.clientX, e.clientY)
-              : pointerDisturb(art,  e.clientX, e.clientY);
+        (saver ? art2 : art) && pointerDisturb((saver ? art2 : art), e.clientX, e.clientY);
       }
     });
     addEventListener("pointerdown", e => {
-      saver ? pointerDisturb(art2, e.clientX, e.clientY)
-            : pointerDisturb(art,  e.clientX, e.clientY);
+      (saver ? art2 : art) && pointerDisturb((saver ? art2 : art), e.clientX, e.clientY);
     });
 
+    // hotkeys
     addEventListener("keydown", (e) => {
-      if (e.key === "r") { paletteIndex = (paletteIndex + 1) % PALETTES.length; }
+      if (e.code === "Space") { // pause/resume
+        paused = !paused;
+        e.preventDefault();
+        return;
+      }
+      if (e.key === "r") { paletteIndex = (paletteIndex + 1) % PALETTES.length; return; }
       if (e.key === "i") {
         const root = document.documentElement;
         const cs = getComputedStyle(root);
@@ -313,33 +294,37 @@
         const fg = cs.getPropertyValue("--fg").trim();
         root.style.setProperty("--bg", fg);
         root.style.setProperty("--fg", bg);
+        return;
       }
       if (e.key === ".") {
         (saver ? art2 : art).classList.toggle("blink");
+        return;
       }
       if (e.key === "f") {
         document.fullscreenElement ? document.exitFullscreen()
           : document.body.requestFullscreen().catch(()=>{});
+        return;
       }
       if (e.key === "s") {
         // toggle screensaver
         saver = !saver;
+        paused = false; // entering/leaving clears pause
         if (saver) {
-          // swap visible nodes
           center.hidden = true; wrap.hidden = false;
-          // ensure bounds use actual sizes
-          measureBounds();
-          pos.x = Math.random() * maxX;
-          pos.y = Math.random() * maxY;
-          vel.x = (Math.random()<.5?-1:1) * (100 + Math.random()*80);
-          vel.y = (Math.random()<.5?-1:1) * ( 80 + Math.random()*80);
-          // sync initial glyphs into bouncing pre
-          art2.textContent = art.textContent;
+          // ensure bounds & start position/velocity
+          paintInto(art2);
+          requestAnimationFrame(() => {
+            measureBounds();
+            pos.x = Math.random() * maxX;
+            pos.y = Math.random() * maxY;
+            vel.x = (Math.random()<.5?-1:1) * (100 + Math.random()*80);
+            vel.y = (Math.random()<.5?-1:1) * ( 80 + Math.random()*80);
+            wrap.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+          });
         } else {
           wrap.hidden = true; center.hidden = false;
           wrap.style.transform = "";
           pos = {x:0,y:0};
-          // ensure centered view updates immediately
           paintInto(art);
         }
       }
