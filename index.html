@@ -10,12 +10,12 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32'/%3E%3C/svg%3E">
   <style>
     :root{
-      --bg:#05070a; --fg:#e7ecef; --dim:#8aa1ab;
+      --bg:#05070a; --fg:#e7ecef;
       --hueA:230; --hueB:280;
-      --grid-alpha:.035;
+      --grid-alpha:.028;           /* subtler grid */
       --grid-size:22px;
-      --pad:20px;          /* default equal padding */
-      --mobile-pad:clamp(12px, 6vw, 28px); /* equal padding on small screens */
+      --pad:20px;                  /* desktop padding */
+      --mobile-pad:clamp(14px, 6vw, 28px); /* equal padding on phones */
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -26,64 +26,61 @@
       background:var(--bg);
     }
 
-    /* Stage fits any viewport perfectly, incl. mobile & fullscreen */
+    /* Stage fills viewport perfectly on mobile & fullscreen */
     .stage{
       position:relative;
       width:100vw;
-      height:100dvh; /* mobile safe */
+      height:100svh; /* small-viewport unit avoids browser UI shrink issues */
       isolation:isolate;
       padding:var(--pad);
     }
 
-    /* ---- Background layers (seamless, subtle) ---- */
+    /* Background layers (subtle, seamless) */
     .layer{position:absolute; inset:0; pointer-events:none}
 
-    /* Soft light sources + vignette (radials only -> no spines) */
     .lights::before{
-      content:""; position:absolute; inset:-10%;
+      content:""; position:absolute; inset:-8%;
       background:
-        radial-gradient(1000px 700px at 12% 10%,
-          color-mix(in oklab, oklch(.98 .05 255) 12%, transparent) 0%,
-          color-mix(in oklab, oklch(.95 .04 240) 9%, transparent) 40%,
-          transparent 72%),
-        radial-gradient(900px 600px at 88% 86%,
-          color-mix(in oklab, oklch(.96 .05 210) 7%, transparent) 0%,
-          transparent 60%),
+        radial-gradient(1000px 700px at 14% 12%,
+          color-mix(in oklab, oklch(.98 .05 255) 10%, transparent) 0%,
+          color-mix(in oklab, oklch(.95 .04 240) 8%, transparent) 38%,
+          transparent 70%),
+        radial-gradient(900px 600px at 86% 84%,
+          color-mix(in oklab, oklch(.96 .04 210) 6%, transparent) 0%,
+          transparent 58%),
         radial-gradient(1400px 900px at 50% 50%,
-          transparent 45%, rgba(0,0,0,.24) 100%);
+          transparent 46%, rgba(0,0,0,.2) 100%);
       filter: blur(.2px);
+      opacity:.95;
     }
 
-    /* Crisp terminal grid */
     .grid::before{
       content:""; position:absolute; inset:0;
       background-image:
         linear-gradient(rgba(255,255,255,var(--grid-alpha)) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,var(--grid-alpha)) 1px, transparent 1px);
       background-size:var(--grid-size) var(--grid-size), var(--grid-size) var(--grid-size);
-      mix-blend-mode:overlay; opacity:.85;
+      mix-blend-mode:overlay; opacity:.9;
     }
 
-    /* Scanlines + faint glare */
     .scan::before{
       content:""; position:absolute; inset:0;
       background-image:
-        repeating-linear-gradient(0deg, rgba(255,255,255,.028) 0 1px, transparent 1px 3px),
-        radial-gradient(300px 120px at 50% -30px, rgba(255,255,255,.04), transparent);
-      mix-blend-mode:overlay; opacity:.2;
+        repeating-linear-gradient(0deg, rgba(255,255,255,.022) 0 1px, transparent 1px 3px),
+        radial-gradient(280px 110px at 50% -30px, rgba(255,255,255,.035), transparent);
+      mix-blend-mode:overlay; opacity:.18;
     }
 
-    /* Gentle sweep (linear, rotated element; no conic seams) */
     .sweep{
-      --sweep-alpha:.045;
-      position:absolute; inset:-20%;
+      --sweep-alpha:.032;
+      position:absolute; inset:-18%;
       background:linear-gradient(45deg,
         rgba(180,210,255,var(--sweep-alpha)) 0%,
         rgba(0,0,0,0) 50%,
         rgba(180,210,255,var(--sweep-alpha)) 100%);
-      mix-blend-mode:plus-lighter; opacity:.32;
+      mix-blend-mode:plus-lighter; opacity:.26;
       transform-origin:12% 10%;
-      animation:sweep 24s linear infinite;
+      animation:sweep 26s linear infinite;
       pointer-events:none;
     }
     @keyframes sweep{ to { transform:rotate(360deg); } }
@@ -95,41 +92,45 @@
       display:grid; place-items:center;
       pointer-events:none;
     }
-
-    /* On small screens: top-center with equal padding */
+    /* Phone: top-center with equal padding */
     @media (max-width: 768px), (hover:none), (pointer:coarse){
       .stage{ padding:var(--mobile-pad); }
       .center{ justify-items:center; align-items:start; }
     }
 
-    /* Screensaver bouncer */
+    /* Bouncer for screensaver */
     .wrap{ position:absolute; left:0; top:0; will-change:transform }
     .box{ display:inline-block; pointer-events:auto }
 
-    /* ASCII style */
     pre.ascii{
       margin:0; white-space:pre; line-height:1.0;
       font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
-      font-size: clamp(10px, 4.2vw, 24px); /* smaller on phones */
+      font-size: clamp(9px, 3.25vw, 22px); /* smaller on phones */
       letter-spacing:.02em; text-rendering:optimizeSpeed;
-      filter: drop-shadow(0 0 .28rem rgba(0,0,0,.55))
-              drop-shadow(0 0 .16rem rgba(140,180,255,.10));
+      filter: drop-shadow(0 0 .24rem rgba(0,0,0,.5))
+              drop-shadow(0 0 .12rem rgba(140,180,255,.10));
       color: oklch(.92 .03 var(--hueA));
     }
 
-    /* Digital grain */
     .noise{
       position:absolute; inset:-25vmax;
-      background:repeating-conic-gradient(from 0deg, rgba(255,255,255,.016) 0 .25deg, transparent .25deg .5deg);
-      animation:n 1.6s steps(8) infinite; mix-blend-mode:soft-light; opacity:.42; pointer-events:none;
+      background:repeating-conic-gradient(from 0deg, rgba(255,255,255,.012) 0 .25deg, transparent .25deg .5deg);
+      animation:n 1.6s steps(8) infinite; mix-blend-mode:soft-light; opacity:.36; pointer-events:none;
     }
-    @keyframes n{to{transform:translate3d(1.2%,-0.8%,0)}}
+    @keyframes n{to{transform:translate3d(1%,-0.6%,0)}}
 
     .hud{
-      position:absolute; bottom:16px; inset-inline:0;
-      text-align:center; font-size:12px; color:oklch(.78 .04 var(--hueB)); opacity:.82;
+      position:absolute; bottom:28px; inset-inline:0;
+      text-align:center; font-size:12px; color:oklch(.78 .04 var(--hueB)); opacity:.75;
     }
     @media (hover:none),(pointer:coarse){ .hud{display:none} } /* hide HUD on mobile */
+
+    /* Barely-visible meta footer (always shown, incl. mobile) */
+    .meta{
+      position:absolute; bottom:10px; inset-inline:0;
+      text-align:center; font-size:11px; letter-spacing:.06em;
+      color:#cdd3d880; opacity:.18; user-select:text;
+    }
   </style>
 </head>
 <body>
@@ -145,13 +146,21 @@
     <div class="wrap" id="wrap" hidden><div class="box" id="wrapBox"></div></div>
 
     <div class="noise" aria-hidden="true"></div>
+
     <div class="hud">
       keys: <kbd>r</kbd> palette • <kbd>f</kbd> fullscreen •
       <kbd>s</kbd> screensaver • <kbd>space</kbd> pause
     </div>
+    <div class="meta" id="meta"></div>
   </div>
 
   <script>
+    // ---------- version/meta ----------
+    const VERSION = "pre-alpha v0.0.15";
+    const COPYRIGHT = "© James Ray 2025";
+    document.getElementById("meta").textContent =
+      `${VERSION} — full site coming soon — ${COPYRIGHT}`;
+
     // ---------- tiny utils ----------
     const pick = a => a[(Math.random()*a.length)|0];
     const clamp = (v,a,b)=>Math.min(b,Math.max(a,v));
@@ -186,7 +195,7 @@
     // ---------- subtle glitch ----------
     const GLITCH=["█","▓","▒","■","⣿","#","@",":","+","="];
     function mutateLine(line,chance){ return line.replace(/[^\s]/g,c=>Math.random()<chance?pick(GLITCH):c); }
-    function rowShift(lines,rate=0.003){
+    function rowShift(lines,rate=0.0025){
       for(let i=0;i<lines.length;i++){
         if(Math.random()<rate){
           const row=lines[i]; const k=(Math.random()<.5?-1:1)*((Math.random()*2)|0);
@@ -228,16 +237,16 @@
     // ---------- line opacity (digital fade) ----------
     let tAccum=0;
     function lineOpacity(i){
-      // subtle per-row drift between ~0.78 and ~0.95 with phase offset
-      const base=0.86 + 0.07*Math.sin(tAccum*0.9 + i*0.75);
-      const jitter=0.01*(Math.sin(tAccum*3.3 + i*2.1));
-      return clamp(base + jitter, 0.78, 0.96);
+      // subtle per-row drift between ~0.80 and ~0.94 with phase offset
+      const base=0.86 + 0.06*Math.sin(tAccum*0.8 + i*0.78);
+      const jitter=0.008*(Math.sin(tAccum*3.1 + i*2.05));
+      return clamp(base + jitter, 0.80, 0.94);
     }
 
     // ---------- color drift ----------
     let hueA=230,hueB=280;
     function drift(dt){
-      hueA=(hueA+6*dt)%360; hueB=(hueB+10*dt)%360;
+      hueA=(hueA+5.5*dt)%360; hueB=(hueB+9*dt)%360;
       const root=document.documentElement;
       root.style.setProperty('--hueA',hueA.toFixed(2));
       root.style.setProperty('--hueB',hueB.toFixed(2));
@@ -245,7 +254,7 @@
 
     // ---------- screensaver physics ----------
     let saver=false, paused=false;
-    let pos={x:0,y:0}, vel={x:120,y:96}, maxX=0,maxY=0;
+    let pos={x:0,y:0}, vel={x:110,y:92}, maxX=0,maxY=0;
 
     function measureBounds(){
       const sw=document.documentElement.clientWidth, sh=document.documentElement.clientHeight;
@@ -267,15 +276,14 @@
     function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]))}
     function paint(){
       const rows = build();
-      let lines = rows.map((line,i)=> mutateLine(line, i%2?0.009:0.004));
-      rowShift(lines,0.004);
+      let lines = rows.map((line,i)=> mutateLine(line, i%2?0.006:0.003));
+      rowShift(lines,0.003);
       applyDisturb(lines);
 
-      // per-row opacity spans
       pre.innerHTML = lines.map((ln,i)=>`<span class="row" style="opacity:${lineOpacity(i)}">${escapeHtml(ln)}</span>`).join("\n");
     }
 
-    // ---------- RAF loop ----------
+    // ---------- RAYLUS loop ----------
     let last=performance.now();
     function frame(now){
       const dt=(now-last)/1000; last=now; tAccum+=dt;
@@ -299,8 +307,8 @@
           requestAnimationFrame(()=>{
             measureBounds();
             pos.x=Math.random()*maxX; pos.y=Math.random()*maxY;
-            vel.x=(Math.random()<.5?-1:1)*(90+Math.random()*60);
-            vel.y=(Math.random()<.5?-1:1)*(80+Math.random()*60);
+            vel.x=(Math.random()<.5?-1:1)*(90+Math.random()*50);
+            vel.y=(Math.random()<.5?-1:1)*(80+Math.random()*50);
             wrap.style.transform=`translate(${pos.x}px,${pos.y}px)`;
           });
         }else{
@@ -321,4 +329,3 @@
   </script>
 </body>
 </html>
-<!-- Raylus.com - v1.0.14 -->
