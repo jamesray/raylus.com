@@ -436,14 +436,11 @@
     const pre=document.createElement('pre');
     pre.className='ascii';
     pre.setAttribute('aria-label','ASCII art');
-    pre.setAttribute('tabindex','0');
 
     const center=document.getElementById('center'), centerBox=document.getElementById('centerBox');
     const wrap=document.getElementById('wrap'), wrapBox=document.getElementById('wrapBox');
     centerBox.appendChild(pre);
 
-    pre.addEventListener("pointerdown", e=>pointerDisturb(pre,e.clientX,e.clientY));
-    pre.addEventListener("pointermove", e=>{ if(e.buttons) pointerDisturb(pre,e.clientX,e.clientY); });
     let isHovering=false, hoverEase=0;
     pre.addEventListener('mouseenter', ()=>{ isHovering=true; pre.classList.add('hovered'); });
     pre.addEventListener('mouseleave', ()=>{ isHovering=false; pre.classList.remove('hovered'); });
@@ -549,6 +546,7 @@
         saver=!saver; paused=false;
         if(saver){
           wrap.hidden=false; center.hidden=true; wrapBox.appendChild(pre);
+          document.dispatchEvent(new CustomEvent("raylus:screensaver-start"));
           requestAnimationFrame(()=>{
             measureBounds();
             pos.x=Math.random()*maxX; pos.y=Math.random()*maxY;
@@ -646,19 +644,19 @@
     }
     updateMuteUI();
 
-    // Autoplay policy helper: on first interaction, if user hasn't chosen to keep it muted, unmute+play.
-    const firstUnlock = (e) => {
-      if (localStorage.getItem("audioMuted") !== "true" && audio.muted) {
+    // Autoplay helper: when the screensaver starts, unmute and play if the user hasn't opted-in to muting.
+    function attemptScreensaverAutoplay() {
+      if (localStorage.getItem("audioMuted") === "true") return;
+      if (audio.muted) {
         audio.muted = false;
-        audio.play().catch(()=>{});
         updateMuteUI();
       }
-    };
-    document.addEventListener("click", firstUnlock, { once: true });
+      audio.play().catch(()=>{});
+    }
+    document.addEventListener("raylus:screensaver-start", attemptScreensaverAutoplay);
 
     // Toggle via icon
-    muteBtn.addEventListener("click", (e)=>{
-      e.stopPropagation(); // don’t trigger the firstUnlock handler
+    muteBtn.addEventListener("click", ()=>{
       audio.muted = !audio.muted;
       localStorage.setItem("audioMuted", String(audio.muted));
       if (!audio.muted) audio.play().catch(()=>{});
@@ -668,4 +666,3 @@
 </body>
 </html>
 <!-- alpha 0.1.2 -->
- 
