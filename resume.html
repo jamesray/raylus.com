@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <meta name="color-scheme" content="dark"/>
+  <title>James Ray — UX Engineer (Resume) • RAYLUS</title>
+
+  <!-- SEO -->
+  <meta name="description" content="Resume of James Ray — UX-focused engineer and technical lead across NASA/JPL and AI platform work. alpha 0.1.2."/>
+  <meta name="keywords" content="James Ray, UX Engineer, Frontend Engineer, Design Systems, Accessibility, TypeScript, Angular, React, Vue, NASA, JPL"/>
+  <link rel="canonical" href="https://raylus.com/resume.html"/>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="profile"/>
+  <meta property="og:site_name" content="RAYLUS"/>
+  <meta property="og:title" content="James Ray — UX Engineer (Resume)"/>
+  <meta property="og:description" content="UX-focused software engineer with a track record across NASA/JPL and AI platform work. alpha 0.1.2."/>
+  <meta property="og:url" content="https://raylus.com/resume.html"/>
+  <meta property="og:image" content="https://raylus.com/og.png"/>
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="James Ray — UX Engineer (Resume)"/>
+  <meta name="twitter:description" content="UX-focused software engineer with a track record across NASA/JPL and AI platform work. alpha 0.1.2."/>
+  <meta name="twitter:image" content="https://raylus.com/og.png"/>
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Person",
+    "name":"James Ray",
+    "jobTitle":"UX Engineer",
+    "email":"mailto:hello@raylus.com",
+    "sameAs":["https://www.linkedin.com/in/james-engineer"],
+    "url":"https://raylus.com/resume.html"
+  }
+  </script>
+
+  <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#05070a"/>
+
+  <style>
+    :root{
+      --bg:#05070a; --fg:#e7ecef;
+      --hueA:230; --hueB:280;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; color:var(--fg);
+      font:16px/1.55 ui-sans-serif,system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif;
+      background:var(--bg);
+      -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    }
+    .stage{min-height:100svh; padding:clamp(16px,4vw,40px); display:grid; place-items:start center; position:relative; overflow:hidden}
+    /* subtle bg */
+    .stage::before{
+      content:""; position:absolute; inset:-8%;
+      background:
+        radial-gradient(1000px 700px at 14% 12%,
+          color-mix(in oklab, oklch(.98 .05 255) 9%, transparent) 0%,
+          color-mix(in oklab, oklch(.95 .04 240) 7%, transparent) 38%,
+          transparent 70%),
+        radial-gradient(900px 600px at 86% 84%,
+          color-mix(in oklab, oklch(.96 .04 210) 5%, transparent) 0%,
+          transparent 58%),
+        radial-gradient(1400px 900px at 50% 50%,
+          transparent 48%, rgba(0,0,0,.18) 100%);
+      filter: blur(.2px); opacity:.9; pointer-events:none;
+    }
+    .grid{position:absolute; inset:0; pointer-events:none; opacity:.85; mix-blend-mode:overlay}
+    .grid::before{
+      content:""; position:absolute; inset:0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.024) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.024) 1px, transparent 1px);
+      background-size:22px 22px, 22px 22px;
+    }
+
+    /* floating back */
+    .back{
+      position:fixed; left:clamp(12px,3vw,24px); top:clamp(12px,3vw,24px);
+      text-decoration:none; color:#cfe3ff; font:12px ui-monospace,Menlo,Consolas,monospace;
+      background:rgba(120,160,255,.10); border:1px solid rgba(140,180,255,.25);
+      padding:.34rem .58rem; border-radius:9999px;
+      display:inline-flex; gap:.35rem; align-items:center; z-index:2;
+      backdrop-filter: blur(2px);
+    }
+    .back:hover{ background:rgba(140,180,255,.16) }
+
+    /* card */
+    .card{
+      position:relative; z-index:1;
+      width:min(100%, 1000px);
+      margin:auto; background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.06); border-radius:16px;
+      padding:clamp(16px,2.4vw,28px);
+      box-shadow:0 10px 40px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    h1{ margin:0 0 .25rem; font:600 clamp(22px,3.8vw,34px)/1.1 ui-sans-serif,system-ui; letter-spacing:.02em }
+    .sub{ color:#aab7bf; margin-bottom:1rem; font-size:clamp(13px,1.8vw,14px) }
+    h2{ margin:1.2rem 0 .4rem; font-size:clamp(15px,2.2vw,18px); color:#dfe7eb; }
+    ul{ margin:.2rem 0 0 1.1rem; padding:0 }
+    li{ margin:.2rem 0; }
+    .muted{ color:#9fb0ba }
+    .row{ display:flex; gap:1.2rem; flex-wrap:wrap }
+    .pill{
+      display:inline-block; margin:.18rem .25rem 0 0; padding:.28rem .62rem;
+      border-radius:9999px; background:rgba(200,220,255,.08);
+      border:1px solid rgba(200,220,255,.16); color:#dfe8ff; font-size:12px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+    }
+
+    /* footer */
+    .meta{
+      text-align:center; margin-top:18px; font-size:11px; letter-spacing:.06em; color:#cdd3d880;
+    }
+
+    /* print tweaks */
+    @media print{
+      .stage::before,.grid{display:none}
+      .back{display:none}
+      body{background:#fff;color:#111}
+      .card{box-shadow:none;border-color:#ddd}
+      a{color:#0645ad}
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <a class="back" href="/" aria-label="Back to landing">← BACK</a>
+    <div class="grid"></div>
+
+    <article class="card" itemscope itemtype="https://schema.org/Person">
+      <h1 itemprop="name">James Ray</h1>
+      <div class="sub">
+        UX Engineer · Senior Technical Lead & Software Engineer — Altadena, CA ·
+        <a href="mailto:hello@raylus.com" itemprop="email">hello@raylus.com</a>
+      </div>
+
+      <h2>Professional Summary</h2>
+      <p class="muted">
+        UX-focused software engineer with 15+ years in tech, including 8 years as Technical Lead for JPL & NASA’s external websites.
+        Proven ability to deliver user-centric products at scale, balancing design, performance, and technical depth. Seasoned in shaping
+        design systems, mentoring engineers, and driving adoption of modern frameworks. Recently contributed to NASA’s AI-powered
+        data platform “Luna” with frontend leadership, DevOps patching cycles, and operator-facing guides.
+      </p>
+
+      <h2>Core Competencies</h2>
+      <div class="row">
+        <span class="pill">TypeScript</span><span class="pill">React</span><span class="pill">Vue</span><span class="pill">Angular</span>
+        <span class="pill">TailwindCSS</span><span class="pill">Material UI</span><span class="pill">PrimeNG</span>
+        <span class="pill">Storybook</span><span class="pill">Playwright</span><span class="pill">Accessibility</span>
+        <span class="pill">Responsive Design</span><span class="pill">Design Systems</span><span class="pill">Mentorship</span>
+        <span class="pill">Performance</span><span class="pill">Middleware Optimization</span><span class="pill">CI/CD</span>
+        <span class="pill">Documentation</span>
+      </div>
+
+      <h2>Professional Experience</h2>
+      <ul>
+        <li><strong>Luna Project (AI-powered Data Platform, NASA JSC) — Senior Frontend & DevOps Engineer</strong><br/>
+          <span class="muted">Jan 2025 – Present</span><br/>
+          Designed & shipped Angular/PrimeNG features (object tree, announcements dashboard, advanced tables);
+          mentored developers; owned version patching & CI/CD stability across release lines; authored clearer operator/admin guides;
+          partnered with backend & operator teams to debug and optimize workflows.
+        </li>
+        <li><strong>NASA Jet Propulsion Laboratory — Enterprise Applications Software Engineer III / Technical Lead</strong><br/>
+          <span class="muted">Pasadena, CA · Nov 2015 – Nov 2024</span><br/>
+          Technical lead for flagship sites including <em>science.nasa.gov</em> and <em>jpl.nasa.gov</em>; drove modernization (Nuxt, TypeScript),
+          event-driven middleware, accessibility & performance; aligned stakeholders; mentored engineers and advanced UX standards
+          across 100+ high-visibility sites.
+        </li>
+        <li><strong>Manufactur Agency — Web Developer</strong><br/>
+          <span class="muted">Los Angeles, CA · Jan 2013 – Nov 2015</span><br/>
+          Built and launched high-profile WordPress & e-commerce sites (e.g., AzizAnsari.com, Skrillex.com);
+          collaborated with creative teams to deliver polished, responsive experiences.
+        </li>
+      </ul>
+
+      <h2>Selected Projects</h2>
+      <ul>
+        <li><strong>science.nasa.gov</strong> — Large-scale redesign & content migration; improved engagement, accessibility, and UX clarity.</li>
+        <li><strong>jpl.nasa.gov</strong> — Headless CMS integration (Wagtail + Nuxt); streamlined editorial workflow and reduced load times.</li>
+        <li><strong>Multi-tenant Django CMS</strong> — Internal JPL platform; NASA Agency Honor Award (2022) for innovation & efficiency.</li>
+        <li><strong>Luna UX Enhancements</strong> — Angular/PrimeNG components, stabilized patch releases, and operator guides.</li>
+      </ul>
+
+      <h2>Skills</h2>
+      <div class="row">
+        <span class="pill">UX/UI Design & Prototyping (Figma)</span>
+        <span class="pill">Accessible, Responsive Frontend</span>
+        <span class="pill">CI/CD Pipelines & DevOps Patching</span>
+        <span class="pill">Mentorship & Team Leadership</span>
+        <span class="pill">Documentation & User Guides</span>
+      </div>
+
+      <h2>Awards & Conferences</h2>
+      <ul class="muted">
+        <li>Webby Award (2024) — <em>science.nasa.gov</em></li>
+        <li>Webby Award (2023) — <em>jpl.nasa.gov</em></li>
+        <li>NASA Agency Honor Award (2025) — Web Modernization</li>
+        <li>NASA Agency Honor Award (2022) — Multi-tenant Django CMS</li>
+        <li>Speaker & Attendee — DjangoCon 2022; multiple Wagtail conferences; other Python community events</li>
+      </ul>
+
+      <h2>Contact</h2>
+      <p class="muted">
+        LinkedIn: <a href="https://www.linkedin.com/in/james-engineer" target="_blank" rel="noopener">/in/james-engineer</a> ·
+        Email: <a href="mailto:hello@raylus.com">hello@raylus.com</a>
+      </p>
+
+      <div class="meta">alpha 0.1.2 — © James Ray 2025</div>
+    </article>
+  </div>
+</body>
+</html>
