@@ -12,9 +12,9 @@
     :root{
       --bg:#05070a; --fg:#e7ecef;
       --hueA:230; --hueB:280;
-      --grid-alpha:.028;           /* subtler grid */
+      --grid-alpha:.024;          /* subtler grid */
       --grid-size:22px;
-      --pad:20px;                  /* desktop padding */
+      --pad:20px;                 /* desktop padding */
       --mobile-pad:clamp(14px, 6vw, 28px); /* equal padding on phones */
     }
     *{box-sizing:border-box}
@@ -30,28 +30,28 @@
     .stage{
       position:relative;
       width:100vw;
-      height:100svh; /* small-viewport unit avoids browser UI shrink issues */
+      height:100svh; /* avoids iOS URL bar snap */
       isolation:isolate;
       padding:var(--pad);
     }
 
-    /* Background layers (subtle, seamless) */
+    /* Background layers (subtle, seam-free) */
     .layer{position:absolute; inset:0; pointer-events:none}
 
     .lights::before{
       content:""; position:absolute; inset:-8%;
       background:
         radial-gradient(1000px 700px at 14% 12%,
-          color-mix(in oklab, oklch(.98 .05 255) 10%, transparent) 0%,
-          color-mix(in oklab, oklch(.95 .04 240) 8%, transparent) 38%,
+          color-mix(in oklab, oklch(.98 .05 255) 9%, transparent) 0%,
+          color-mix(in oklab, oklch(.95 .04 240) 7%, transparent) 38%,
           transparent 70%),
         radial-gradient(900px 600px at 86% 84%,
-          color-mix(in oklab, oklch(.96 .04 210) 6%, transparent) 0%,
+          color-mix(in oklab, oklch(.96 .04 210) 5%, transparent) 0%,
           transparent 58%),
         radial-gradient(1400px 900px at 50% 50%,
-          transparent 46%, rgba(0,0,0,.2) 100%);
+          transparent 48%, rgba(0,0,0,.18) 100%);
       filter: blur(.2px);
-      opacity:.95;
+      opacity:.9;
     }
 
     .grid::before{
@@ -60,27 +60,27 @@
         linear-gradient(rgba(255,255,255,var(--grid-alpha)) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,var(--grid-alpha)) 1px, transparent 1px);
       background-size:var(--grid-size) var(--grid-size), var(--grid-size) var(--grid-size);
-      mix-blend-mode:overlay; opacity:.9;
+      mix-blend-mode:overlay; opacity:.85;
     }
 
     .scan::before{
       content:""; position:absolute; inset:0;
       background-image:
-        repeating-linear-gradient(0deg, rgba(255,255,255,.022) 0 1px, transparent 1px 3px),
-        radial-gradient(280px 110px at 50% -30px, rgba(255,255,255,.035), transparent);
-      mix-blend-mode:overlay; opacity:.18;
+        repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0 1px, transparent 1px 3px),
+        radial-gradient(260px 100px at 50% -30px, rgba(255,255,255,.03), transparent);
+      mix-blend-mode:overlay; opacity:.16;
     }
 
     .sweep{
-      --sweep-alpha:.032;
+      --sweep-alpha:.028;
       position:absolute; inset:-18%;
       background:linear-gradient(45deg,
         rgba(180,210,255,var(--sweep-alpha)) 0%,
         rgba(0,0,0,0) 50%,
         rgba(180,210,255,var(--sweep-alpha)) 100%);
-      mix-blend-mode:plus-lighter; opacity:.26;
+      mix-blend-mode:plus-lighter; opacity:.22;
       transform-origin:12% 10%;
-      animation:sweep 26s linear infinite;
+      animation:sweep 28s linear infinite;
       pointer-events:none;
     }
     @keyframes sweep{ to { transform:rotate(360deg); } }
@@ -98,39 +98,52 @@
       .center{ justify-items:center; align-items:start; }
     }
 
-    /* Bouncer for screensaver */
+    /* Screensaver bouncer */
     .wrap{ position:absolute; left:0; top:0; will-change:transform }
     .box{ display:inline-block; pointer-events:auto }
 
+    /* ASCII style */
     pre.ascii{
       margin:0; white-space:pre; line-height:1.0;
       font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
-      font-size: clamp(9px, 3.25vw, 22px); /* smaller on phones */
+      font-size: clamp(9px, 3.0vw, 21px); /* smaller on phones */
       letter-spacing:.02em; text-rendering:optimizeSpeed;
-      filter: drop-shadow(0 0 .24rem rgba(0,0,0,.5))
-              drop-shadow(0 0 .12rem rgba(140,180,255,.10));
+      filter: drop-shadow(0 0 .22rem rgba(0,0,0,.5))
+              drop-shadow(0 0 .1rem rgba(140,180,255,.1));
       color: oklch(.92 .03 var(--hueA));
     }
 
+    /* Digital grain */
     .noise{
       position:absolute; inset:-25vmax;
-      background:repeating-conic-gradient(from 0deg, rgba(255,255,255,.012) 0 .25deg, transparent .25deg .5deg);
-      animation:n 1.6s steps(8) infinite; mix-blend-mode:soft-light; opacity:.36; pointer-events:none;
+      background:repeating-conic-gradient(from 0deg, rgba(255,255,255,.01) 0 .25deg, transparent .25deg .5deg);
+      animation:n 1.6s steps(8) infinite; mix-blend-mode:soft-light; opacity:.3; pointer-events:none;
     }
-    @keyframes n{to{transform:translate3d(1%,-0.6%,0)}}
+    @keyframes n{to{transform:translate3d(0.8%,-0.5%,0)}}
 
     .hud{
-      position:absolute; bottom:28px; inset-inline:0;
-      text-align:center; font-size:12px; color:oklch(.78 .04 var(--hueB)); opacity:.75;
+      position:absolute; bottom:32px; inset-inline:0;
+      text-align:center; font-size:12px; color:oklch(.78 .04 var(--hueB)); opacity:.72;
     }
     @media (hover:none),(pointer:coarse){ .hud{display:none} } /* hide HUD on mobile */
 
-    /* Barely-visible meta footer (always shown, incl. mobile) */
+    /* Barely-visible meta footer */
     .meta{
       position:absolute; bottom:10px; inset-inline:0;
       text-align:center; font-size:11px; letter-spacing:.06em;
-      color:#cdd3d880; opacity:.18; user-select:text;
+      color:#cdd3d880; opacity:.16; user-select:text;
     }
+
+    /* Minimal info overlay (toggle with i) */
+    .info{
+      position:absolute; top:10px; left:12px;
+      font:12px/1.25 ui-monospace,Menlo,Consolas,monospace;
+      color:#bcd; opacity:.55; background:rgba(0,0,0,.12);
+      padding:.35rem .5rem; border-radius:.4rem;
+      backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
+      display:none; pointer-events:none;
+    }
+    .info.on{ display:block }
   </style>
 </head>
 <body>
@@ -148,15 +161,16 @@
     <div class="noise" aria-hidden="true"></div>
 
     <div class="hud">
-      keys: <kbd>r</kbd> palette • <kbd>f</kbd> fullscreen •
-      <kbd>s</kbd> screensaver • <kbd>space</kbd> pause
+      keys: <kbd>r</kbd> palette • <kbd>↑/↓</kbd> size • <kbd>f</kbd> fullscreen •
+      <kbd>s</kbd> screensaver • <kbd>space</kbd> pause • <kbd>i</kbd> info • <kbd>t</kbd>/<kbd>p</kbd>/<kbd>P</kbd> export
     </div>
     <div class="meta" id="meta"></div>
+    <div class="info" id="info"></div>
   </div>
 
   <script>
     // ---------- version/meta ----------
-    const VERSION = "pre-alpha v0.0.15";
+    const VERSION = "pre-alpha v0.0.16";
     const COPYRIGHT = "© James Ray 2025";
     document.getElementById("meta").textContent =
       `${VERSION} — full site coming soon — ${COPYRIGHT}`;
@@ -164,6 +178,11 @@
     // ---------- tiny utils ----------
     const pick = a => a[(Math.random()*a.length)|0];
     const clamp = (v,a,b)=>Math.min(b,Math.max(a,v));
+    const saveBlob = (blob, name) => {
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob); a.download=name; a.click();
+      setTimeout(()=>URL.revokeObjectURL(a.href), 1500);
+    };
 
     // ---------- glyphs ----------
     const GLYPHS={
@@ -183,6 +202,14 @@
     ];
     let paletteIndex=0;
 
+    // Optional density set (inspired, but minimal): cycles which row uses which glyph "on" char
+    const DENSITY_WAVES = [
+      ["on"],                               // uniform
+      ["on","on","on","on","on","on","on"],// explicit uniform
+      // subtle wave: top/bottom slightly lighter char
+      ["on","on","on","on","on","on","on"].map((k,i)=> i%3===0?"on":"on"),
+    ];
+
     function build(on=PALETTES[paletteIndex].on, off=PALETTES[paletteIndex].off){
       const rows=Array.from({length:ROWS},()=> "");
       for(const ch of WORD){
@@ -195,7 +222,7 @@
     // ---------- subtle glitch ----------
     const GLITCH=["█","▓","▒","■","⣿","#","@",":","+","="];
     function mutateLine(line,chance){ return line.replace(/[^\s]/g,c=>Math.random()<chance?pick(GLITCH):c); }
-    function rowShift(lines,rate=0.0025){
+    function rowShift(lines,rate=0.002){
       for(let i=0;i<lines.length;i++){
         if(Math.random()<rate){
           const row=lines[i]; const k=(Math.random()<.5?-1:1)*((Math.random()*2)|0);
@@ -237,16 +264,16 @@
     // ---------- line opacity (digital fade) ----------
     let tAccum=0;
     function lineOpacity(i){
-      // subtle per-row drift between ~0.80 and ~0.94 with phase offset
-      const base=0.86 + 0.06*Math.sin(tAccum*0.8 + i*0.78);
-      const jitter=0.008*(Math.sin(tAccum*3.1 + i*2.05));
-      return clamp(base + jitter, 0.80, 0.94);
+      // faint per-row drift ~0.82..0.93
+      const base=0.86 + 0.05*Math.sin(tAccum*0.7 + i*0.78);
+      const jitter=0.006*(Math.sin(tAccum*2.7 + i*1.9));
+      return clamp(base + jitter, 0.82, 0.93);
     }
 
     // ---------- color drift ----------
     let hueA=230,hueB=280;
     function drift(dt){
-      hueA=(hueA+5.5*dt)%360; hueB=(hueB+9*dt)%360;
+      hueA=(hueA+5*dt)%360; hueB=(hueB+8*dt)%360;
       const root=document.documentElement;
       root.style.setProperty('--hueA',hueA.toFixed(2));
       root.style.setProperty('--hueB',hueB.toFixed(2));
@@ -273,23 +300,53 @@
     }
 
     // ---------- paint ----------
+    let fontScaleNudge = 0; // adjusted by ↑/↓ (desktop only)
+    function setFontScale(){
+      // base clamp + nudges (~±10%)
+      const base = window.matchMedia("(hover:none),(pointer:coarse)").matches
+        ? "clamp(9px, 3.0vw, 21px)"
+        : "clamp(10px, 2.1vw, 22px)";
+      const nudged = Math.max(-0.15, Math.min(0.15, fontScaleNudge));
+      pre.style.fontSize = `calc(${base} * ${ (1+nudged).toFixed(3) })`;
+    }
+    setFontScale();
+
     function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]))}
     function paint(){
       const rows = build();
-      let lines = rows.map((line,i)=> mutateLine(line, i%2?0.006:0.003));
-      rowShift(lines,0.003);
+      let lines = rows.map((line,i)=> mutateLine(line, i%2?0.004:0.002));
+      rowShift(lines,0.002);
       applyDisturb(lines);
-
       pre.innerHTML = lines.map((ln,i)=>`<span class="row" style="opacity:${lineOpacity(i)}">${escapeHtml(ln)}</span>`).join("\n");
     }
 
-    // ---------- RAYLUS loop ----------
+    // ---------- info overlay & fps ----------
+    const infoEl = document.getElementById('info');
+    let showInfo = false;
+    let lastFpsT = performance.now(), frames=0, fps=0;
+    function tickFps(now){
+      frames++;
+      if(now - lastFpsT >= 1000){
+        fps = Math.round((frames*1000)/(now-lastFpsT));
+        frames=0; lastFpsT = now;
+      }
+    }
+    function renderInfo(){
+      if(!showInfo){ infoEl.classList.remove('on'); return; }
+      infoEl.classList.add('on');
+      const pal = PALETTES[paletteIndex].on;
+      infoEl.textContent = `fps ${fps} · pal ${pal} · ${VERSION}`;
+    }
+
+    // ---------- RAF loop ----------
     let last=performance.now();
     function frame(now){
       const dt=(now-last)/1000; last=now; tAccum+=dt;
+      tickFps(now);
       drift(dt);
       if(saver) stepBounce(dt);
       paint();
+      renderInfo();
       requestAnimationFrame(frame);
     }
     paint(); requestAnimationFrame(frame);
@@ -323,9 +380,43 @@
           : document.documentElement.requestFullscreen?.().catch(()=>{});
         return;
       }
+      if(e.key==="i"){ showInfo=!showInfo; renderInfo(); return; }
+      if(e.key==="ArrowUp"){ fontScaleNudge += 0.03; setFontScale(); return; }
+      if(e.key==="ArrowDown"){ fontScaleNudge -= 0.03; setFontScale(); return; }
+      if(e.key==="t"){
+        // export TXT of current frame
+        const text = [...pre.childNodes].map(n=>n.textContent).join("\n");
+        const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
+        saveBlob(blob, `raylus-${Date.now()}.txt`);
+        return;
+      }
+      if(e.key==="p" || e.key==="P"){
+        // export PNG by drawing the pre text onto a canvas (simple raster)
+        const scale = e.key==="P" ? 4 : 1;
+        const lines = [...pre.childNodes].map(n=>n.textContent);
+        const fs = parseFloat(getComputedStyle(pre).fontSize)||16;
+        const cw = fs*0.62, ch = fs*1.0;
+        const w = Math.ceil(Math.max(...lines.map(l=>l.length)) * cw);
+        const h = Math.ceil(lines.length * ch);
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.floor(w*scale));
+        canvas.height = Math.max(1, Math.floor(h*scale));
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled=false;
+        ctx.scale(scale, scale);
+        ctx.fillStyle = getComputedStyle(document.body).backgroundColor || "#000";
+        ctx.fillRect(0,0,w,h);
+        ctx.font = `${fs}px ${getComputedStyle(pre).fontFamily}`;
+        ctx.textBaseline = "top";
+        ctx.fillStyle = getComputedStyle(pre).color || "#eee";
+        lines.forEach((ln,i)=>ctx.fillText(ln, 0, i*ch));
+        canvas.toBlob(b=>saveBlob(b, `raylus-${Date.now()}@${scale}x.png`));
+        return;
+      }
     });
 
     addEventListener("resize", ()=>{ if(saver) measureBounds(); });
   </script>
 </body>
 </html>
+<!-- v0.0.16 -->
