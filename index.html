@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="color-scheme" content="dark"/>
   <title>RAYLUS</title>
-  <meta name="description" content="pre-alpha v0.0.20"/>
+  <meta name="description" content="pre-alpha v0.0.21"/>
   <meta name="robots" content="index,follow"/>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32'/%3E%3C/svg%3E">
   <style>
@@ -192,6 +192,10 @@
       <a href="mailto:hello@raylus.com" title="Email James">
         <span>✉︎</span>
       </a>
+      <!-- NEW: resume icon opens hash route -->
+      <a href="#/resume" title="Resume (pre-alpha)">
+        <span>📄</span>
+      </a>
     </nav>
 
     <!-- main landing -->
@@ -265,7 +269,7 @@
 
   <script>
     // ---------- version/meta ----------
-    const VERSION = "pre-alpha v0.0.20";
+    const VERSION = "pre-alpha v0.0.21";
     const COPYRIGHT = "© James Ray 2025";
     document.getElementById("meta").textContent =
       `${VERSION} — full site coming soon — ${COPYRIGHT}`;
@@ -337,7 +341,7 @@
     const wrap=document.getElementById('wrap'), wrapBox=document.getElementById('wrapBox');
     centerBox.appendChild(pre);
 
-    // Navigation from glyph
+    // Keep glyph navigation (may not fire on some layers, but harmless)
     pre.addEventListener('click', ()=> { location.hash = '#/resume'; });
     pre.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); location.hash = '#/resume'; }
@@ -528,4 +532,5 @@
   </script>
 </body>
 </html>
-<!-- pre-alpha v0.0.20 -->
+<!-- pre-alpha v0.0.21 -->
+ 
