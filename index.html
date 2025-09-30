@@ -4,7 +4,7 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>RAYLUS</title>
-  <meta name="description" content="raylus — ascii."/>
+  <meta name="description" content="ascii glyphs."/>
   <meta name="robots" content="index,follow"/>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32'/%3E%3C/svg%3E">
   <style>
@@ -14,6 +14,8 @@
       --dim: #9aa0a6;
       --accent: #9bbcff;
       --ring: #1b1f24;
+      --hueA: 230;  /* drifted in JS */
+      --hueB: 280;
     }
     @media (prefers-color-scheme: light) {
       :root { --bg:#fafafa; --fg:#111; --dim:#555; --accent:#1a73e8; --ring:#e8eaed; }
@@ -27,19 +29,23 @@
         radial-gradient(1100px 600px at -10% 110%, color-mix(in oklab, var(--accent) 10%, transparent), transparent),
         var(--bg);
       color: var(--fg);
-      display: grid;
-      place-items: center;
+      display: grid; place-items: center;
       overflow: hidden;
       font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif;
+      user-select: none;
     }
     .stage {
       position: relative;
       width: 100%;
       height: 100%;
-      display: grid;
-      place-items: center;
+      display: grid; place-items: center;
       padding: clamp(12px, 4vw, 48px);
       isolation: isolate;
+    }
+    .wrap {
+      position: relative;
+      will-change: transform;
+      /* screensaver mode moves this via transform */
     }
     pre#art {
       margin: 0;
@@ -49,8 +55,8 @@
       font-size: clamp(10px, 3vw, 24px);
       letter-spacing: .02em;
       filter: drop-shadow(0 0 0.35rem rgba(0,0,0,.6));
-      user-select: none;
       text-rendering: optimizeSpeed;
+      color: oklch(0.92 0.03 var(--hueA));
     }
     .stage::before {
       content: "";
@@ -66,95 +72,226 @@
       position: absolute; inset: -25vmax;
       background:
         repeating-conic-gradient(from 0deg, rgba(255,255,255,.02) 0 .25deg, transparent .25deg .5deg);
-      animation: noise 1.6s steps(8) infinite;
-      mix-blend-mode: soft-light;
-      pointer-events: none;
-      opacity: .55;
+      animation: n 1.6s steps(8) infinite;
+      mix-blend-mode: soft-light; opacity: .55; pointer-events: none;
     }
-    @keyframes noise { to { transform: translate3d(1.5%, -1%, 0); } }
+    @keyframes n { to { transform: translate3d(1.5%, -1%, 0); } }
     .hud {
       position: absolute; bottom: 16px; inset-inline: 0;
-      text-align: center; font-size: 12px; color: var(--dim);
+      text-align: center; font-size: 12px; color: oklch(0.75 0.04 var(--hueB));
       opacity: .8;
     }
-    .blink { animation: blink 2.4s ease-in-out infinite; }
-    @keyframes blink {
-      0%, 96%, 100% { opacity: 1 }
-      97% { opacity: .55 }
-      98% { opacity: .18 }
-      99% { opacity: .92 }
-    }
+    .blink { animation: b 2.4s ease-in-out infinite; }
+    @keyframes b { 0%,96%,100%{opacity:1} 97%{opacity:.55} 98%{opacity:.18} 99%{opacity:.92} }
   </style>
 </head>
 <body>
   <div class="stage">
-    <pre id="art" aria-label="RAYLUS ascii art"></pre>
+    <div class="wrap">
+      <pre id="art" aria-label="ASCII art"></pre>
+    </div>
     <div class="noise" aria-hidden="true"></div>
-    <div class="hud">hotkeys: <kbd>r</kbd> palette • <kbd>i</kbd> invert • <kbd>.</kbd> blink • <kbd>f</kbd> fullscreen</div>
+    <div class="hud">
+      type to change • <kbd>Backspace</kbd> delete •
+      <kbd>r</kbd> palette • <kbd>i</kbd> invert • <kbd>.</kbd> blink •
+      <kbd>s</kbd> screensaver • <kbd>f</kbd> fullscreen • <kbd>esc</kbd> reset
+    </div>
   </div>
 
-  <script type="module">
+  <script>
+    // ---------------- utilities (tiny, original) ----------------
+    const clamp = (v,a,b)=>Math.min(b,Math.max(a,v));
+    const lerp  = (a,b,t)=>a+(b-a)*t;
+    const pick  = arr => arr[(Math.random()*arr.length)|0];
+
+    // ---------------- glyphs (5x7, uppercase) -------------------
     const GLYPHS = {
-      R: ["████ ","█   █","█   █","████ ","█ █  ","█  █ ","█   █"],
-      A: [" ███ ","█   █","█   █","█████","█   █","█   █","█   █"],
-      Y: ["█   █"," █ █ ","  █  ","  █  ","  █  ","  █  ","  █  "],
-      L: ["█    ","█    ","█    ","█    ","█    ","█    ","█████"],
-      U: ["█   █","█   █","█   █","█   █","█   █","█   █"," ███ "],
-      S: [" ███ ","█   █","█    "," ███ ","    █","█   █"," ███ "],
-      " ": ["     ","     ","     ","     ","     ","     ","     "],
+      R:["████ ","█   █","█   █","████ ","█ █  ","█  █ ","█   █"],
+      A:[" ███ ","█   █","█   █","█████","█   █","█   █","█   █"],
+      Y:["█   █"," █ █ ","  █  ","  █  ","  █  ","  █  ","  █  "],
+      L:["█    ","█    ","█    ","█    ","█    ","█    ","█████"],
+      U:["█   █","█   █","█   █","█   █","█   █","█   █"," ███ "],
+      S:[" ███ ","█   █","█    "," ███ ","    █","█   █"," ███ "],
+      " ":[ "     ","     ","     ","     ","     ","     ","     "]
     };
-    const BASE_PALETTES = [
-      { on: "█", off: " " },
-      { on: "▓", off: " " },
-      { on: "▒", off: " " },
-      { on: "■", off: "·" },
-      { on: "#", off: "." },
-      { on: "@", off: " " },
-      { on: "⣿", off: " " },
-    ];
-    let paletteIndex = 0;
-    const WORD = "RAYLUS";
     const ROWS = 7;
 
-    function renderWord(word, on = BASE_PALETTES[paletteIndex].on, off = BASE_PALETTES[paletteIndex].off) {
-      const rows = Array.from({ length: ROWS }, () => "");
-      for (const ch of word) {
+    // palettes are glyph-char skins; last two have visible "off" states
+    const PALETTES = [
+      { on:"█", off:" " }, { on:"▓", off:" " }, { on:"▒", off:" " },
+      { on:"⣿",off:" " }, { on:"#", off:"." }, { on:"■", off:"·" }, { on:"@", off:"." }
+    ];
+    let paletteIndex = 0;
+
+    // ---------------- state ----------------
+    let text = "RAYLUS";
+    let blink = false;
+    let invert = false;
+    let hueA = 230, hueB = 280;
+
+    // disturbance: map index->ttl frames of forced glitch
+    const disturb = new Map(); // key = "x,y" string -> ttl
+
+    // screensaver state for bouncing wrapper
+    const wrap = document.querySelector(".wrap");
+    let saver = false;
+    let pos = { x:0, y:0 }, vel = { x: 120, y: 90 }; // px/sec, updated each frame
+
+    // element refs
+    const art = document.getElementById("art");
+
+    // ---------------- render pipeline ----------------
+    function renderWord(word, on=PALETTES[paletteIndex].on, off=PALETTES[paletteIndex].off){
+      const rows = Array.from({length:ROWS},()=> "");
+      for(const ch of word){
         const g = GLYPHS[ch] ?? GLYPHS[" "];
-        for (let r = 0; r < ROWS; r++) {
-          rows[r] += g[r].replaceAll("█", on).replaceAll(" ", off) + "  ";
+        for(let r=0;r<ROWS;r++){
+          rows[r] += g[r].replaceAll("█",on).replaceAll(" ",off) + "  ";
         }
       }
       return rows.join("\n");
     }
 
-    const art = document.getElementById("art");
-    art.textContent = renderWord(WORD);
-
-    const glyphCycle = ["█","▓","▒","■","⣿","#","@"];
-    function mutateLine(line, chance = 0.02) {
-      return line.replace(/[^\s]/g, c => Math.random() < chance ? glyphCycle[(Math.random()*glyphCycle.length)|0] : c);
+    const GLITCH = ["█","▓","▒","■","⣿","#","@",":","*","+","="];
+    function mutateLine(line, chance){
+      return line.replace(/[^\s]/g, c => Math.random()<chance ? pick(GLITCH) : c);
     }
 
-    addEventListener("keydown", (e) => {
-      if (e.key === "r") { paletteIndex = (paletteIndex + 1) % BASE_PALETTES.length; }
-      if (e.key === "i") {
+    function applyDisturb(lines){
+      // lines: array of char arrays
+      for(const [key,ttl] of disturb){
+        if(ttl<=0){ disturb.delete(key); continue; }
+        const [gx,gy] = key.split(",").map(Number);
+        if (gy>=0 && gy<lines.length){
+          const row = lines[gy];
+          if (gx>=0 && gx<row.length && row[gx] !== " "){
+            row[gx] = pick(GLITCH);
+          }
+        }
+        disturb.set(key, ttl-1);
+      }
+    }
+
+    function paint(){
+      // base draw
+      let txt = renderWord(text);
+      // micro glitches
+      const lines = txt.split("\n").map((line,i)=> mutateLine(line, i%2?0.012:0.006).split(""));
+      // pointer disturbance overlay
+      applyDisturb(lines);
+      art.textContent = lines.map(a=>a.join("")).join("\n");
+    }
+
+    // ---------------- color drift + tick ----------------
+    let last = performance.now();
+    function tick(now){
+      const dt = (now - last)/1000; last = now;
+
+      // drift hues
+      hueA = (hueA +  8*dt) % 360;
+      hueB = (hueB + 13*dt) % 360;
+      const root = document.documentElement;
+      root.style.setProperty("--hueA", hueA.toFixed(2));
+      root.style.setProperty("--hueB", hueB.toFixed(2));
+
+      // screensaver bounce
+      if (saver){
+        const stage = document.querySelector(".stage").getBoundingClientRect();
+        const box   = wrap.getBoundingClientRect();
+        pos.x += vel.x*dt; pos.y += vel.y*dt;
+        // bounce on edges with small padding
+        const pad = 12;
+        if (pos.x < -box.width/2 + pad){ pos.x = -box.width/2 + pad; vel.x *= -1; }
+        if (pos.y < -box.height/2 + pad){ pos.y = -box.height/2 + pad; vel.y *= -1; }
+        if (pos.x > stage.width - box.width/2 - pad){ pos.x = stage.width - box.width/2 - pad; vel.x *= -1; }
+        if (pos.y > stage.height - box.height/2 - pad){ pos.y = stage.height - box.height/2 - pad; vel.y *= -1; }
+        // center the transform relative to stage
+        wrap.style.transform = `translate(${pos.x|0}px, ${pos.y|0}px)`;
+      }
+
+      paint();
+      requestAnimationFrame(tick);
+    }
+
+    // ---------------- pointer ripple ----------------
+    function disturbAt(clientX, clientY){
+      // map client coords to cell indices inside <pre>
+      const r = art.getBoundingClientRect();
+      const px = clientX - r.left, py = clientY - r.top;
+      // approximate char metrics from computed font size
+      const fs = parseFloat(getComputedStyle(art).fontSize) || 16;
+      const cw = fs * 0.62; // monospace-ish factor
+      const ch = fs * 1.0;  // line-height:1.0
+      const gx = Math.floor(px / cw);
+      const gy = Math.floor(py / ch);
+      const R = 3; // ripple radius (cells)
+      for (let y=-R; y<=R; y++){
+        for (let x=-R; x<=R; x++){
+          if (x*x + y*y <= R*R){
+            disturb.set(`${gx+x},${gy+y}`, 6 + ((R - Math.hypot(x,y))|0)); // ttl varies
+          }
+        }
+      }
+    }
+    addEventListener("pointermove", e => { if (e.buttons) disturbAt(e.clientX, e.clientY); });
+    addEventListener("pointerdown", e => disturbAt(e.clientX, e.clientY));
+
+    // ---------------- typing ----------------
+    const MAX_LEN = 18;
+    addEventListener("keydown", (e)=>{
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+      if (e.key === "Backspace"){
+        text = text.slice(0,-1) || " ";
+        e.preventDefault(); return;
+      }
+      if (e.key === "Escape"){
+        text = "RAYLUS";
+        saver = false; wrap.style.transform = ""; pos={x:0,y:0};
+        return;
+      }
+      if (e.key === "r"){ paletteIndex = (paletteIndex + 1) % PALETTES.length; return; }
+      if (e.key === "i"){
         const root = document.documentElement;
         const cs = getComputedStyle(root);
         const bg = cs.getPropertyValue("--bg").trim();
         const fg = cs.getPropertyValue("--fg").trim();
         root.style.setProperty("--bg", fg);
         root.style.setProperty("--fg", bg);
+        invert = !invert;
+        return;
       }
-      if (e.key === ".") { art.classList.toggle("blink"); }
-      if (e.key === "f") { document.fullscreenElement ? document.exitFullscreen() : document.body.requestFullscreen().catch(()=>{}); }
+      if (e.key === "."){ blink = !blink; art.classList.toggle("blink", blink); return; }
+      if (e.key === "f"){
+        document.fullscreenElement ? document.exitFullscreen() :
+          document.body.requestFullscreen().catch(()=>{});
+        return;
+      }
+      if (e.key === "s"){ // screensaver toggle
+        saver = !saver;
+        if (!saver){ wrap.style.transform = ""; pos={x:0,y:0}; }
+        else {
+          // randomize initial direction slightly each time
+          vel.x = (Math.random()<.5?-1:1) * (100 + Math.random()*80);
+          vel.y = (Math.random()<.5?-1:1) * (80  + Math.random()*80);
+        }
+        return;
+      }
+
+      // printable
+      if (e.key.length === 1){
+        const ch = e.key.toUpperCase();
+        if (!(ch in GLYPHS) && ch !== " "){
+          // we only have A-Z and space; ignore others
+          return;
+        }
+        if (text.length >= MAX_LEN) text = text.slice(1);
+        text += ch;
+      }
     });
 
-    function tick() {
-      let txt = renderWord(WORD);
-      txt = txt.split("\n").map((line,i) => mutateLine(line, i%2?0.015:0.008)).join("\n");
-      art.textContent = txt;
-      requestAnimationFrame(tick);
-    }
+    // ---------------- boot ----------------
+    paint();
     requestAnimationFrame(tick);
   </script>
 </body>
