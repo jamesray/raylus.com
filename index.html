@@ -9,43 +9,103 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32'/%3E%3C/svg%3E">
   <style>
     :root {
-      --bg: #0a0b0f;
-      --fg: #e7e9ec;
-      --dim: #9aa0a6;
-      --accent: #9bbcff;
-      --ring: #1b1f24;
-      --hueA: 230;  /* JS drifts these */
+      --bg: #07090b;
+      --fg: #e7ecef;
+      --dim: #87a0aa;
+      --ring: #0f1318;
+      --hueA: 230;
       --hueB: 280;
+      /* terminal grid intensity */
+      --grid-alpha: .04;
     }
     @media (prefers-color-scheme: light) {
-      :root { --bg:#fafafa; --fg:#111; --dim:#555; --accent:#1a73e8; --ring:#e8eaed; }
+      :root { --bg:#f7f9fb; --fg:#0c1114; --dim:#5f6b72; --ring:#e6eaef; }
     }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
+    * { box-sizing: border-box }
+    html, body { height: 100% }
+
     body {
       margin: 0;
-      background:
-        radial-gradient(1400px 700px at 80% -10%, color-mix(in oklab, var(--accent) 12%, transparent), transparent),
-        radial-gradient(1100px 600px at -10% 110%, color-mix(in oklab, var(--accent) 10%, transparent), transparent),
-        var(--bg);
       color: var(--fg);
-      display: grid; place-items: center;
-      overflow: hidden;
       font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif;
       user-select: none;
+      overflow: hidden;
+      /* FUTURISTIC TERMINAL BACKDROP:
+         - off-axis light source (radial) from top-left
+         - subtle vignette
+         - ultra-faint grid underlay
+      */
+      background:
+        /* scan glow source */
+        radial-gradient(900px 600px at 12% 8%,
+          color-mix(in oklab, oklch(.98 .05 255) 12%, transparent) 0%,
+          color-mix(in oklab, oklch(.95 .04 235) 8%, transparent) 40%,
+          transparent 70%),
+        /* vignette */
+        radial-gradient(1200px 700px at 50% 50%,
+          transparent 40%,
+          rgba(0,0,0,.25) 100%),
+        var(--bg);
+      /* faint terminal grid (both axes) */
+      background-image:
+        linear-gradient(rgba(255,255,255,var(--grid-alpha)) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,var(--grid-alpha)) 1px, transparent 1px),
+        radial-gradient(900px 600px at 12% 8%,
+          color-mix(in oklab, oklch(.98 .05 255) 12%, transparent) 0%,
+          color-mix(in oklab, oklch(.95 .04 235) 8%, transparent) 40%,
+          transparent 70%),
+        radial-gradient(1200px 700px at 50% 50%,
+          transparent 40%,
+          rgba(0,0,0,.25) 100%),
+        var(--bg);
+      background-size:
+        24px 24px, 24px 24px, auto, auto, auto;
+      background-blend-mode:
+        overlay, overlay, normal, normal, normal;
+      display: grid;
+      place-items: center;
     }
+
     .stage {
       position: relative;
       width: 100%;
       height: 100%;
       isolation: isolate;
+      /* scanlines overlay */
     }
-    /* this box is absolutely positioned and "bounces" via transform */
+    .stage::before {
+      content: "";
+      position: absolute; inset: 0;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,.03), rgba(255,255,255,.03) 1px, transparent 1px, transparent 3px),
+        radial-gradient(300px 120px at 50% -30px, rgba(255,255,255,.05), transparent);
+      mix-blend-mode: overlay;
+      pointer-events: none;
+      opacity: .22;
+    }
+
+    /* when screensaver OFF, we use this centered wrapper */
+    .center {
+      display: grid;
+      place-items: center;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    /* when screensaver ON, we use this absolutely-positioned bouncer */
     .wrap {
       position: absolute;
       left: 0; top: 0;
       will-change: transform;
+      display: contents; /* so pre sizes dictate wrap bbox via inner box */
     }
+    .box {
+      /* gives wrap a measurable size */
+      display: inline-block;
+      pointer-events: auto;
+    }
+
     pre#art {
       margin: 0;
       white-space: pre;
@@ -53,21 +113,11 @@
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: clamp(10px, 3vw, 24px);
       letter-spacing: .02em;
-      filter: drop-shadow(0 0 0.35rem rgba(0,0,0,.6));
       text-rendering: optimizeSpeed;
+      filter: drop-shadow(0 0 0.35rem rgba(0,0,0,.6));
       color: oklch(0.92 0.03 var(--hueA));
     }
-    /* scanlines + bloom */
-    .stage::before {
-      content: "";
-      position: absolute; inset: 0;
-      background-image:
-        repeating-linear-gradient(0deg, rgba(255,255,255,.03), rgba(255,255,255,.03) 1px, transparent 1px, transparent 3px),
-        radial-gradient(300px 120px at 50% -30px, rgba(255,255,255,.06), transparent);
-      mix-blend-mode: overlay;
-      pointer-events: none;
-      opacity: .22;
-    }
+
     /* animated grain */
     .noise {
       position: absolute; inset: -25vmax;
@@ -80,9 +130,8 @@
 
     .hud {
       position: absolute; bottom: 16px; inset-inline: 0;
-      text-align: center; font-size: 12px; color: oklch(0.75 0.04 var(--hueB));
+      text-align: center; font-size: 12px; color: oklch(0.78 0.04 var(--hueB));
       opacity: .8;
-      pointer-events: none;
     }
 
     .blink { animation: b 2.4s ease-in-out infinite; }
@@ -91,21 +140,27 @@
 </head>
 <body>
   <div class="stage">
-    <div class="wrap">
-      <pre id="art" aria-label="ASCII art"></pre>
+    <!-- centered container (used when screensaver is OFF) -->
+    <div class="center" id="center">
+      <div class="box"><pre id="art" aria-label="ASCII art"></pre></div>
     </div>
+
+    <!-- bouncing container (used when screensaver is ON) -->
+    <div class="wrap" id="wrap" hidden>
+      <div class="box"><pre id="art2" aria-label="ASCII art (bounce)"></pre></div>
+    </div>
+
     <div class="noise" aria-hidden="true"></div>
     <div class="hud">
-      <span style="pointer-events:auto">keys:</span>
-      <kbd>r</kbd> palette • <kbd>i</kbd> invert • <kbd>.</kbd> blink • <kbd>f</kbd> fullscreen
+      keys: <kbd>r</kbd> palette • <kbd>i</kbd> invert • <kbd>.</kbd> blink • <kbd>f</kbd> fullscreen • <kbd>s</kbd> screensaver
     </div>
   </div>
 
   <script>
-    // ------- helpers -------
+    // ---------- helpers ----------
     const pick = arr => arr[(Math.random()*arr.length)|0];
 
-    // ------- glyphs (5x7 uppercase) -------
+    // ---------- glyphs ----------
     const GLYPHS = {
       R:["████ ","█   █","█   █","████ ","█ █  ","█  █ ","█   █"],
       A:[" ███ ","█   █","█   █","█████","█   █","█   █","█   █"],
@@ -115,25 +170,15 @@
       S:[" ███ ","█   █","█    "," ███ ","    █","█   █"," ███ "],
       " ":[ "     ","     ","     ","     ","     ","     ","     "]
     };
-    const WORD = "RAYLUS";
     const ROWS = 7;
+    const WORD = "RAYLUS";
 
-    // palettes define on/off chars (last two have visible off)
     const PALETTES = [
       { on:"█", off:" " }, { on:"▓", off:" " }, { on:"▒", off:" " },
       { on:"⣿",off:" " }, { on:"#", off:"." }, { on:"■", off:"·" }, { on:"@", off:"." }
     ];
     let paletteIndex = 0;
 
-    // disturbance map: "x,y" -> ttl
-    const disturb = new Map();
-
-    // elements
-    const stage = document.querySelector(".stage");
-    const wrap  = document.querySelector(".wrap");
-    const art   = document.getElementById("art");
-
-    // ------- render pipeline -------
     function renderWord(word, on=PALETTES[paletteIndex].on, off=PALETTES[paletteIndex].off){
       const rows = Array.from({length:ROWS},()=> "");
       for(const ch of word){
@@ -145,85 +190,29 @@
       return rows.join("\n");
     }
 
+    // glitch / disturbance
     const GLITCH = ["█","▓","▒","■","⣿","#","@",":","*","+","="];
     function mutateLine(line, chance){
       return line.replace(/[^\s]/g, c => Math.random()<chance ? pick(GLITCH) : c);
     }
-
+    const disturb = new Map(); // "x,y" -> ttl
     function applyDisturb(lines){
       for(const [key,ttl] of disturb){
         if(ttl<=0){ disturb.delete(key); continue; }
         const [gx,gy] = key.split(",").map(Number);
         if (gy>=0 && gy<lines.length){
           const row = lines[gy];
-          if (gx>=0 && gx<row.length && row[gx] !== " "){
-            row[gx] = pick(GLITCH);
-          }
+          if (gx>=0 && gx<row.length && row[gx] !== " "){ row[gx] = pick(GLITCH); }
         }
         disturb.set(key, ttl-1);
       }
     }
-
-    function paint(){
-      let txt = renderWord(WORD);
-      const lines = txt.split("\n").map((line,i)=> mutateLine(line, i%2?0.012:0.006).split(""));
-      applyDisturb(lines);
-      art.textContent = lines.map(a=>a.join("")).join("\n");
-    }
-
-    // ------- color drift -------
-    let hueA = 230, hueB = 280;
-    function driftColors(dt){
-      hueA = (hueA +  8*dt) % 360;
-      hueB = (hueB + 13*dt) % 360;
-      const root = document.documentElement;
-      root.style.setProperty("--hueA", hueA.toFixed(2));
-      root.style.setProperty("--hueB", hueB.toFixed(2));
-    }
-
-    // ------- perfect bounce (elastic reflection) -------
-    // We move the .wrap box with subpixel accuracy and reflect elastically:
-    // if pos goes beyond bounds, reflect position across boundary: pos = 2*max - pos
-    let pos = { x: 0, y: 0 };           // top-left (px)
-    let vel = { x: 140, y: 110 };       // px/sec (diagonal-ish)
-    let maxX = 0, maxY = 0;             // bounds (updated on resize)
-
-    function measureBounds(){
-      // use real sizes to stay aligned with vw/vh exactly
-      const sw = stage.clientWidth;
-      const sh = stage.clientHeight;
-      const bw = wrap.offsetWidth;
-      const bh = wrap.offsetHeight;
-      maxX = Math.max(0, sw - bw);
-      maxY = Math.max(0, sh - bh);
-      // clamp current pos inside bounds
-      pos.x = Math.min(Math.max(pos.x, 0), maxX);
-      pos.y = Math.min(Math.max(pos.y, 0), maxY);
-    }
-
-    function stepBounce(dt){
-      // advance
-      pos.x += vel.x * dt;
-      pos.y += vel.y * dt;
-
-      // reflect exactly (no energy loss, no jitter)
-      if (pos.x < 0)         { pos.x = -pos.x;           vel.x = -vel.x; }
-      if (pos.x > maxX)      { pos.x = 2*maxX - pos.x;   vel.x = -vel.x; }
-      if (pos.y < 0)         { pos.y = -pos.y;           vel.y = -vel.y; }
-      if (pos.y > maxY)      { pos.y = 2*maxY - pos.y;   vel.y = -vel.y; }
-
-      wrap.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
-    }
-
-    // ------- pointer ripple -------
-    function disturbAt(clientX, clientY){
-      const r = art.getBoundingClientRect();
+    function pointerDisturb(preEl, clientX, clientY){
+      const r = preEl.getBoundingClientRect();
       const px = clientX - r.left, py = clientY - r.top;
-      const fs = parseFloat(getComputedStyle(art).fontSize) || 16;
-      const cw = fs * 0.62;  // monospace-ish factor
-      const ch = fs * 1.0;   // line-height:1.0
-      const gx = Math.floor(px / cw);
-      const gy = Math.floor(py / ch);
+      const fs = parseFloat(getComputedStyle(preEl).fontSize) || 16;
+      const cw = fs * 0.62, ch = fs * 1.0;
+      const gx = Math.floor(px / cw), gy = Math.floor(py / ch);
       const R = 3;
       for (let y=-R; y<=R; y++){
         for (let x=-R; x<=R; x++){
@@ -233,10 +222,88 @@
         }
       }
     }
-    addEventListener("pointermove", e => { if (e.buttons) disturbAt(e.clientX, e.clientY); });
-    addEventListener("pointerdown", e => disturbAt(e.clientX, e.clientY));
 
-    // ------- hotkeys -------
+    // elements
+    const center = document.getElementById('center');
+    const wrap   = document.getElementById('wrap');
+    const art    = document.getElementById('art');
+    const art2   = document.getElementById('art2');
+
+    // initial paint (centered)
+    function paintInto(preEl){
+      let txt = renderWord(WORD);
+      const lines = txt.split("\n").map((line,i)=> mutateLine(line, i%2?0.012:0.006).split(""));
+      applyDisturb(lines);
+      preEl.textContent = lines.map(a=>a.join("")).join("\n");
+    }
+    paintInto(art);
+
+    // color drift
+    let hueA = 230, hueB = 280;
+    function drift(dt){
+      hueA = (hueA +  8*dt) % 360;
+      hueB = (hueB + 13*dt) % 360;
+      const root = document.documentElement;
+      root.style.setProperty("--hueA", hueA.toFixed(2));
+      root.style.setProperty("--hueB", hueB.toFixed(2));
+    }
+
+    // screensaver toggle (OFF by default)
+    let saver = false;
+    let last = performance.now();
+
+    // bounce physics for wrap/box
+    let pos = { x: 0, y: 0 }, vel = { x: 140, y: 110 };
+    let maxX = 0, maxY = 0;
+
+    function measureBounds(){
+      const sw = document.documentElement.clientWidth;
+      const sh = document.documentElement.clientHeight;
+      const bw = wrap.querySelector('.box').offsetWidth;
+      const bh = wrap.querySelector('.box').offsetHeight;
+      maxX = Math.max(0, sw - bw);
+      maxY = Math.max(0, sh - bh);
+      pos.x = Math.min(Math.max(pos.x, 0), maxX);
+      pos.y = Math.min(Math.max(pos.y, 0), maxY);
+    }
+
+    function stepBounce(dt){
+      pos.x += vel.x * dt; pos.y += vel.y * dt;
+      if (pos.x < 0)    { pos.x = -pos.x;         vel.x = -vel.x; }
+      if (pos.x > maxX) { pos.x = 2*maxX - pos.x; vel.x = -vel.x; }
+      if (pos.y < 0)    { pos.y = -pos.y;         vel.y = -vel.y; }
+      if (pos.y > maxY) { pos.y = 2*maxY - pos.y; vel.y = -vel.y; }
+      wrap.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+    }
+
+    // main loop
+    function frame(now){
+      const dt = (now - last)/1000; last = now;
+      drift(dt);
+
+      if (saver){
+        stepBounce(dt);
+        paintInto(art2);
+      } else {
+        paintInto(art);
+      }
+
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+
+    // input
+    addEventListener("pointermove", e => {
+      if (e.buttons){
+        saver ? pointerDisturb(art2, e.clientX, e.clientY)
+              : pointerDisturb(art,  e.clientX, e.clientY);
+      }
+    });
+    addEventListener("pointerdown", e => {
+      saver ? pointerDisturb(art2, e.clientX, e.clientY)
+            : pointerDisturb(art,  e.clientX, e.clientY);
+    });
+
     addEventListener("keydown", (e) => {
       if (e.key === "r") { paletteIndex = (paletteIndex + 1) % PALETTES.length; }
       if (e.key === "i") {
@@ -247,37 +314,38 @@
         root.style.setProperty("--bg", fg);
         root.style.setProperty("--fg", bg);
       }
-      if (e.key === ".") { art.classList.toggle("blink"); }
+      if (e.key === ".") {
+        (saver ? art2 : art).classList.toggle("blink");
+      }
       if (e.key === "f") {
-        document.fullscreenElement ? document.exitFullscreen() :
-          document.body.requestFullscreen().catch(()=>{});
+        document.fullscreenElement ? document.exitFullscreen()
+          : document.body.requestFullscreen().catch(()=>{});
+      }
+      if (e.key === "s") {
+        // toggle screensaver
+        saver = !saver;
+        if (saver) {
+          // swap visible nodes
+          center.hidden = true; wrap.hidden = false;
+          // ensure bounds use actual sizes
+          measureBounds();
+          pos.x = Math.random() * maxX;
+          pos.y = Math.random() * maxY;
+          vel.x = (Math.random()<.5?-1:1) * (100 + Math.random()*80);
+          vel.y = (Math.random()<.5?-1:1) * ( 80 + Math.random()*80);
+          // sync initial glyphs into bouncing pre
+          art2.textContent = art.textContent;
+        } else {
+          wrap.hidden = true; center.hidden = false;
+          wrap.style.transform = "";
+          pos = {x:0,y:0};
+          // ensure centered view updates immediately
+          paintInto(art);
+        }
       }
     });
 
-    // ------- boot -------
-    // initial paint and size, then enter RAF loop
-    art.textContent = renderWord(WORD);
-    // measure after first paint so wrap has size
-    requestAnimationFrame(() => {
-      measureBounds();
-      // seed pos to a random point; randomize direction a bit
-      pos.x = Math.random() * maxX;
-      pos.y = Math.random() * maxY;
-      vel.x *= (Math.random()<.5 ? -1 : 1);
-      vel.y *= (Math.random()<.5 ? -1 : 1);
-    });
-    addEventListener("resize", measureBounds);
-
-    let last = performance.now();
-    function frame(now){
-      const dt = (now - last) / 1000;
-      last = now;
-      driftColors(dt);
-      stepBounce(dt);
-      paint();
-      requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
+    addEventListener("resize", () => { if (saver) measureBounds(); });
   </script>
 </body>
 </html>
