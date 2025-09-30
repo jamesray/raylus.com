@@ -3,143 +3,92 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Coming Soon • raylus.com</title>
-  <meta name="description" content="Something new is on the way." />
-  <!-- Flip to 'index,follow' when you want it discoverable -->
+  <title>raylus</title>
   <meta name="robots" content="noindex,nofollow" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23000'/%3E%3C/svg%3E">
+  <meta name="description" content="…" />
+  <meta property="og:title" content="raylus" />
+  <meta property="og:description" content="…" />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32'/%3E%3C/svg%3E">
   <style>
+    /* minimal, elusive */
     :root {
       --bg: #0b0c10;
-      --fg: #e8eaed;
+      --fg: #e7e9ec;
       --muted: #9aa0a6;
-      --card: #111317;
-      --accent: #8ab4f8;
-      --accent-2: #4dd0e1;
-      --ring: #2a2e36;
+      --ring: #1b1f24;
+      --accent: #9bbcff;
     }
     @media (prefers-color-scheme: light) {
-      :root {
-        --bg: #fafafa; --fg: #111; --muted: #5f6368; --card: #fff; --accent: #1a73e8; --accent-2:#00acc1; --ring:#e5e7eb;
-      }
+      :root { --bg:#fafafa; --fg:#111; --muted:#656b72; --ring:#e8eaed; --accent:#1a73e8; }
     }
     * { box-sizing: border-box; }
     html, body { height: 100%; }
     body {
       margin: 0;
-      font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
       background:
-        radial-gradient(1200px 600px at 80% -10%, color-mix(in oklab, var(--accent) 15%, transparent), transparent),
-        radial-gradient(1000px 500px at -10% 110%, color-mix(in oklab, var(--accent-2) 18%, transparent), transparent),
+        radial-gradient(1200px 600px at 80% -10%, color-mix(in oklab, var(--accent) 12%, transparent), transparent),
+        radial-gradient(900px 400px at -10% 110%, color-mix(in oklab, var(--accent) 10%, transparent), transparent),
         var(--bg);
       color: var(--fg);
-      display: grid;
-      place-items: center;
+      font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif;
+      display: grid; place-items: center;
       padding: 24px;
     }
-    .card {
+    main {
       width: min(720px, 100%);
       border: 1px solid var(--ring);
-      background: color-mix(in oklab, var(--card) 92%, transparent);
-      backdrop-filter: blur(6px);
+      background: color-mix(in oklab, var(--bg) 92%, transparent);
       border-radius: 20px;
-      padding: clamp(20px, 4vw, 36px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      padding: clamp(18px, 4vw, 28px);
       text-align: center;
+      backdrop-filter: blur(6px);
     }
     h1 {
+      margin: 0 0 6px;
+      font-size: clamp(28px, 5vw, 42px);
       font-weight: 800;
       letter-spacing: -0.02em;
-      margin: 0 0 6px;
-      font-size: clamp(28px, 4.2vw, 44px);
     }
-    .lead {
-      margin: 0 0 18px;
+    p {
+      margin: 0;
       color: var(--muted);
-      font-size: clamp(15px, 2.2vw, 18px);
-    }
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
-      border: 1px dashed var(--ring);
-      border-radius: 999px;
-      color: var(--muted);
-      margin: 14px 0 22px;
       font-size: 14px;
     }
-    .row {
-      display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+    .dot {
+      display: inline-block;
+      width: .5em; height: .5em;
+      border-radius: 999px;
+      background: currentColor;
+      opacity: .8;
+      animation: pulse 2.4s ease-in-out infinite;
+      vertical-align: middle;
+      margin-left: .25em;
     }
-    .btn {
-      appearance: none; border: 0; cursor: pointer;
-      padding: 12px 16px; border-radius: 12px; font-weight: 600;
-      background: var(--accent); color: white; text-decoration: none;
-      transition: transform .05s ease, filter .2s ease;
+    @keyframes pulse {
+      0%, 100% { opacity: .2; transform: scale(1); }
+      50% { opacity: .9; transform: scale(1.25); }
     }
-    .btn:active { transform: translateY(1px); }
-    .btn.secondary {
-      background: transparent; color: var(--fg); border: 1px solid var(--ring);
+    nav {
+      margin-top: 14px;
+      display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
     }
-    .footer {
-      margin-top: 18px; color: var(--muted); font-size: 12px;
+    a.min {
+      color: var(--muted); text-decoration: none; border: 1px dashed var(--ring);
+      padding: 8px 10px; border-radius: 999px; font-size: 12px;
     }
-    .grid {
-      display: grid; grid-template-columns: repeat(3, minmax(0,1fr));
-      gap: 10px; margin: 20px 0 2px;
-    }
-    .stat {
-      border: 1px solid var(--ring); border-radius: 14px; padding: 12px;
-      background: color-mix(in oklab, var(--card) 96%, transparent);
-    }
-    .stat b { display: block; font-size: 18px; }
-    .sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+    a.min:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   </style>
 </head>
 <body>
-  <main class="card" role="main" aria-labelledby="title">
-    <span class="pill" aria-hidden="true">✨ Something new is landing soon</span>
-    <h1 id="title">Coming Soon</h1>
-    <p class="lead">I’m building the next version of <strong>raylus.com</strong>. Stay tuned.</p>
-
-    <div class="grid" aria-hidden="true">
-      <div class="stat"><span class="sr">Progress:</span><b id="progress">0%</b><small class="muted">progress</small></div>
-      <div class="stat"><span class="sr">ETA:</span><b id="eta">TBD</b><small class="muted">eta</small></div>
-      <div class="stat"><span class="sr">Status:</span><b id="status">In flight</b><small class="muted">status</small></div>
-    </div>
-
-    <div class="row" style="margin-top:14px">
-      <a class="btn" id="notifyBtn" href="mailto:jamesarthurray@gmail.com?subject=Keep%20me%20posted&body=Please%20notify%20me%20when%20raylus.com%20launches.">Notify me</a>
-      <a class="btn secondary" href="https://github.com/" rel="noopener" target="_blank">Follow progress</a>
-    </div>
-
-    <p class="footer">© <span id="year"></span> raylus.com • All rights reserved</p>
+  <main>
+    <h1>raylus<span class="dot" aria-hidden="true"></span></h1>
+    <p>…coming soon</p>
+    <!-- optional tiny links; remove if you want it even more elusive -->
+    <nav aria-label="minimal links">
+      <a class="min" href="mailto:hello@raylus.com">contact</a>
+      <a class="min" href="/" rel="nofollow">/</a>
+    </nav>
   </main>
-
-  <script type="module">
-    // tiny progressive enhancement: rotating ETA + year + fake progress
-    const yearEl = document.getElementById('year');
-    yearEl.textContent = new Date().getFullYear().toString();
-
-    const statuses = ['In flight', 'Refueling', 'Final checks'];
-    const etas = ['TBD', 'Soon™', 'Q4'];
-    const statusEl = document.getElementById('status');
-    const etaEl = document.getElementById('eta');
-    const progressEl = document.getElementById('progress');
-
-    let p = 0; // playful progress; remove if you prefer static
-    setInterval(() => {
-      p = Math.min(p + Math.floor(Math.random()*3), 92);
-      progressEl.textContent = `${p}%`;
-      statusEl.textContent = statuses[(p/10|0) % statuses.length];
-      etaEl.textContent = etas[(p/20|0) % etas.length];
-    }, 1800);
-
-    // Optional guard: if served under a subpath, ensure links still work
-    document.getElementById('notifyBtn')?.addEventListener('click', () => {
-      // noop; placeholder for analytics
-    });
-  </script>
 </body>
 </html>
