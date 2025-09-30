@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="color-scheme" content="dark"/>
   <title>RAYLUS</title>
-  <meta name="description" content="pre-alpha v0.0.23"/>
+  <meta name="description" content="pre-alpha v0.0.24"/>
   <meta name="robots" content="index,follow"/>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32'/%3E%3C/svg%3E">
   <style>
@@ -28,7 +28,7 @@
     .stage{ position:relative; width:100vw; height:100svh; isolation:isolate; padding:var(--pad); }
     .layer{position:absolute; inset:0; pointer-events:none}
 
-    /* light-source background (subtle, futuristic) */
+    /* light-source background */
     .lights::before{
       content:""; position:absolute; inset:-8%;
       background:
@@ -95,12 +95,6 @@
         drop-shadow(0 0 .38rem rgba(140,180,255,.25))
         drop-shadow(0 0 .18rem rgba(140,180,255,.18));
       transform: translateZ(0) scale(1.015);
-    }
-    /* glyph dim when resume open */
-    pre.ascii.dim {
-      opacity:.05; pointer-events:none;
-      filter: grayscale(1) blur(.3px) drop-shadow(0 0 .1rem rgba(0,0,0,.2));
-      transition: opacity .2s ease, filter .2s ease;
     }
 
     .noise{ position:absolute; inset:-25vmax;
@@ -213,73 +207,98 @@
     <div class="meta" id="meta"></div>
     <div class="info" id="info"></div>
 
-    <!-- resume page (UX-lean) -->
+    <!-- resume page (UX-lean, pulled from your resume) -->
     <section id="resume" class="resume" aria-label="Resume">
       <div class="card">
         <a href="#/" class="back">← BACK</a>
         <h1>James Ray</h1>
         <div class="sub">
           UX Engineer · Senior Technical Lead & Software Engineer — Altadena, CA ·
-          <a href="mailto:hello@raylus.com">hello@raylus.com</a>
+          <a href="mailto:jamesarthurray@gmail.com">jamesarthurray@gmail.com</a>
         </div>
 
         <h2>Professional Summary</h2>
         <p class="muted">
-          UX-focused software engineer with deep experience shipping user-centric products at scale. Led and contributed to high-visibility NASA/JPL experiences,
-          balancing design systems, accessibility, performance, and clear documentation. Recently: frontend leadership and release stability on an AI-powered data platform.
+          UX-focused software engineer with 15+ years in tech, including 8 years as Technical Lead for JPL & NASA’s external websites.
+          Proven ability to deliver user-centric products at scale, balancing design, performance, and technical depth. Seasoned in shaping
+          design systems, mentoring engineers, and driving adoption of modern frameworks. Recently contributed to NASA’s AI-powered
+          data platform “Luna” with frontend leadership, DevOps patching cycles, and operator-facing guides.
         </p>
 
-        <h2>Core Skills (UX-leaning)</h2>
+        <h2>Core Competencies</h2>
         <div class="row">
           <span class="pill">TypeScript</span>
           <span class="pill">React</span>
           <span class="pill">Vue</span>
           <span class="pill">Angular</span>
-          <span class="pill">Design Systems</span>
-          <span class="pill">Accessibility</span>
+          <span class="pill">TailwindCSS</span>
+          <span class="pill">Material UI</span>
+          <span class="pill">PrimeNG</span>
           <span class="pill">Storybook</span>
-          <span class="pill">Performance</span>
+          <span class="pill">Playwright</span>
+          <span class="pill">Accessibility</span>
+          <span class="pill">Responsive Design</span>
+          <span class="pill">Design Systems</span>
           <span class="pill">Mentorship</span>
+          <span class="pill">Performance</span>
+          <span class="pill">Middleware Optimization</span>
+          <span class="pill">CI/CD</span>
+          <span class="pill">Documentation</span>
         </div>
 
-        <h2>Experience</h2>
+        <h2>Professional Experience</h2>
         <ul>
-          <li><strong>Senior Frontend / UX Engineer</strong> — AI data platform (2025–Present)<br/>
-            Designed & shipped Angular features (navigation trees, announcements, rich tables), mentored devs, improved docs, and supported stable patch releases.
+          <li>
+            <strong>Luna Project (AI-powered Data Platform, NASA JSC) — Senior Frontend & DevOps Engineer</strong><br/>
+            <span class="muted">Jan 2025 – Present</span><br/>
+            Designed & shipped Angular/PrimeNG features (object tree, announcements dashboard, advanced tables);
+            mentored developers; owned version patching & CI/CD stability across release lines; authored clearer operator/admin guides;
+            partnered with backend & operator teams to debug and optimize workflows.
           </li>
-          <li><strong>Technical Lead / Software Engineer</strong> — NASA JPL Enterprise Apps (2015–2024)<br/>
-            Led modernization of flagship sites; introduced TypeScript/Nuxt patterns, design-system consistency, and performance improvements; mentored engineers and aligned stakeholders.
+          <li>
+            <strong>NASA Jet Propulsion Laboratory — Enterprise Applications Software Engineer III / Technical Lead</strong><br/>
+            <span class="muted">Pasadena, CA · Nov 2015 – Nov 2024</span><br/>
+            Technical lead for flagship sites including <em>science.nasa.gov</em> and <em>jpl.nasa.gov</em>; drove modernization (Nuxt, TypeScript),
+            event-driven middleware, accessibility & performance; aligned stakeholders; mentored engineers and advanced UX standards
+            across 100+ high-visibility sites.
           </li>
-          <li><strong>Web Developer</strong> — Creative/Agency (2013–2015)<br/>
-            Built polished, responsive sites with collaborative design workflows and attention to detail.
+          <li>
+            <strong>Manufactur Agency — Web Developer</strong><br/>
+            <span class="muted">Los Angeles, CA · Jan 2013 – Nov 2015</span><br/>
+            Built and launched high-profile WordPress & e-commerce sites (e.g., AzizAnsari.com, Skrillex.com);
+            collaborated with creative teams to deliver polished, responsive experiences.
           </li>
         </ul>
 
         <h2>Selected Projects</h2>
         <ul>
-          <li>Large-scale public science site — redesign, accessibility uplift, content migration.</li>
-          <li>Institutional site platform — headless CMS, faster builds, better editorial UX.</li>
-          <li>Frontend platform work — component libraries, theming, docs, testing, CI hooks.</li>
+          <li><strong>science.nasa.gov</strong> — Large-scale redesign & content migration; improved engagement, accessibility, and UX clarity.</li>
+          <li><strong>jpl.nasa.gov</strong> — Headless CMS integration (Wagtail + Nuxt); streamlined editorial workflow and reduced load times.</li>
+          <li><strong>Multi-tenant Django CMS</strong> — Internal JPL platform; NASA Agency Honor Award (2022) for innovation & efficiency.</li>
+          <li><strong>Luna UX Enhancements</strong> — Angular/PrimeNG components, stabilized patch releases, and operator guides.</li>
         </ul>
+
+        <h2>Skills</h2>
+        <div class="row">
+          <span class="pill">UX/UI Design & Prototyping (Figma)</span>
+          <span class="pill">Accessible, Responsive Frontend</span>
+          <span class="pill">CI/CD Pipelines & DevOps Patching</span>
+          <span class="pill">Mentorship & Team Leadership</span>
+          <span class="pill">Documentation & User Guides</span>
+        </div>
 
         <h2>Awards & Conferences</h2>
-        <ul id="awards-list" class="muted">
-          <li><em>Webby Award (2024) — science.nasa.gov</em></li>
-          <li><em>Webby Award (2023) — jpl.nasa.gov</em></li>
-          <li><em>(NASA Agency Honor Award (2025) — Web Modernization</em></li>
-          <li><em>(NASA Agency Honor Award (2022) — Multi-tenant Django CMS</em></li>
-          <li><em>Speaker & Attendee — DjangoCon 2022, multiple Wagtail Conferences, and other Python community events</em></li>
+        <ul class="muted">
+          <li>Webby Award (2024) — <em>science.nasa.gov</em></li>
+          <li>Webby Award (2023) — <em>jpl.nasa.gov</em></li>
+          <li>NASA Agency Honor Award (2025) — Web Modernization</li>
+          <li>NASA Agency Honor Award (2022) — Multi-tenant Django CMS</li>
+          <li>Speaker & Attendee — DjangoCon 2022; multiple Wagtail conferences; other Python community events</li>
         </ul>
-
-        <h2>Also Comfortable With</h2>
-        <p class="muted">
-          CI/CD (GitHub Actions/GitLab), release versioning/patching, basic cloud/infra when needed to support product goals.
-        </p>
 
         <h2>Contact</h2>
         <p class="muted">
-          LinkedIn: <a href="https://www.linkedin.com/in/james-engineer" target="_blank" rel="noopener">/in/james-engineer</a> ·
-          Email: <a href="mailto:hello@raylus.com">hello@raylus.com</a>
+          Email: <a href="mailto:jamesarthurray@gmail.com">jamesarthurray@gmail.com</a>
         </p>
       </div>
     </section>
@@ -287,7 +306,7 @@
 
   <script>
     // ---------- version/meta ----------
-    const VERSION = "pre-alpha v0.0.23";
+    const VERSION = "pre-alpha v0.0.24";
     const COPYRIGHT = "© James Ray 2025";
     document.getElementById("meta").textContent =
       `${VERSION} — full site coming soon — ${COPYRIGHT}`;
@@ -317,7 +336,7 @@
       {on:"■",off:"·"},
       {on:"@",off:"."}
     ];
-    // RANDOM palette on load:
+    // Random palette on load:
     let paletteIndex = Math.floor(Math.random()*PALETTES.length);
 
     function build(on=PALETTES[paletteIndex].on, off=PALETTES[paletteIndex].off){
@@ -535,16 +554,17 @@
     function applyRoute(){
       const r = currentRoute();
       if(r === 'resume'){
-        // Dim and disable glyph while viewing resume
-        pre.classList.add('dim');
+        // Fully hide glyph while viewing resume
+        pre.style.display = 'none';
         pre.setAttribute('aria-hidden','true');
+        // pause landing animation
         loopPaused = true;
         saver=false; paused=false;
         wrap.hidden=true; center.hidden=false; centerBox.appendChild(pre);
         resumeEl.classList.add('on');
       }else{
         // Restore glyph
-        pre.classList.remove('dim');
+        pre.style.display = '';
         pre.removeAttribute('aria-hidden');
         resumeEl.classList.remove('on');
         loopPaused = false;
@@ -558,4 +578,5 @@
   </script>
 </body>
 </html>
-<!-- pre-alpha v0.0.23 -->
+<!-- pre-alpha v0.0.24 -->
+ 
