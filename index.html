@@ -441,6 +441,14 @@
     const wrap=document.getElementById('wrap'), wrapBox=document.getElementById('wrapBox');
     centerBox.appendChild(pre);
 
+    pre.addEventListener("pointerdown", e=>{
+      e.preventDefault();
+      pointerDisturb(pre,e.clientX,e.clientY);
+    });
+    pre.addEventListener("pointermove", e=>{
+      if(e.buttons) pointerDisturb(pre,e.clientX,e.clientY);
+    });
+
     let isHovering=false, hoverEase=0;
     pre.addEventListener('mouseenter', ()=>{ isHovering=true; pre.classList.add('hovered'); });
     pre.addEventListener('mouseleave', ()=>{ isHovering=false; pre.classList.remove('hovered'); });
@@ -543,6 +551,7 @@
       if(currentRoute()==="resume" && e.key==="Escape"){ location.hash="#/"; return; }
       if(e.code==="Space"){ if(saver){ paused=!paused; } e.preventDefault(); return; }
       if(e.key==="s"){
+        if(currentRoute()==="resume") return;
         saver=!saver; paused=false;
         if(saver){
           wrap.hidden=false; center.hidden=true; wrapBox.appendChild(pre);
